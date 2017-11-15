@@ -12,6 +12,10 @@ int main()
 {
     Function f;
     Contest g;
-    vector<int> iv{1,3};
-    cout << f.searchInsert(iv,-1);
+    vector<int> can{1,2,3,4,5};
+    auto ivv = f.combinationSum2(can, 8);
+    for(auto x : ivv){
+        f.print(cout, x);
+        cout << endl;
+    }
 }

@@ -17,7 +17,16 @@ struct ListNode {
 
 class Function{
 public:
-
+    template <typename T, int N>
+    void print(std::ostream &os, const T (&p)[N]){
+        for(int i = 0; i < N; ++i)
+            os << p[i] << " ";
+    }
+    template <typename T>
+    void print(std::ostream &os, vector<T> &vt){
+        for(auto x : vt)
+            os << x << " ";
+    }
 //1. Two Sum
     vector<int> twoSum(vector<int>& nums, int target) {
         map<int, int> myMap;//key:the value of vector;value:the index of vector
@@ -592,7 +601,7 @@ public:
     }
 
 //28. Implement strStr()
-/*/KMP
+//KMP
     int next(string needle){
         int len = needle.size();
         vector<int> iv(len - 1, 0);
@@ -603,27 +612,30 @@ public:
         return *max_element(iv.begin(), iv.end());
     }
 
-    int match(string s1, string s2){
+    string diff_index(string s1, string s2){
         int i = 0;
         for(; i != s2.size(); ++i){
             if(s2[i] != s1[i]) break;
         }
-        return i;
+        return i ? s1.substr(0, i) : "";
     }
 
+    /*
     int strStr(string haystack, string needle) {
         int len = needle.size();
-        if(len > haystack.size()) return -1;
         if(len == 0) return 0;
-        for(int i = 0; i < haystack.size();){
-            string s = haystack.substr(i, min(len, haystack.size()));
-            int j = match(s, needle);
-
+        if(len > haystack.size()) return -1;
+        for(int i = 0; i < haystack.size() - len;){
+            string s = haystack.substr(i, len);
+            if(s == needle) return i;
+            else{
+                int index = diff_index(s, needle);
+                int next =
+            }
         }
         return -1;
     }
-*/
-
+    */
 //29. Divide Two Integers
     long long abs(long long x){
         return x < 0 ? -x : x;
@@ -675,6 +687,26 @@ public:
         }
     }
 
+//32. Longest Valid Parentheses
+    int longestValidParentheses(string s) {
+        int len = s.size(), maxLen = 0;
+        if(len < 2) return 0;
+        stack<int> si;
+        si.push(-1);
+        for(int i = 0; i < len; ++i){
+            cout << si.top() << ends;
+            if(s[i] == '(') si.push(i);
+            else{
+                si.pop();
+                if(si.empty()) si.push(i);
+                else maxLen = max(maxLen, i - si.top());
+            }
+        }
+        cout << endl;
+        return si.empty() ? len : maxLen;
+
+    }
+
 //35. Search Insert Position
     int binary_search(vector<int>& nums, int lo, int hi, int target){
         if(hi == lo + 1) return target <= nums[lo] ? lo : hi;
@@ -684,6 +716,112 @@ public:
 
     int searchInsert(vector<int>& nums, int target) {
         return binary_search(nums, 0, nums.size(), target);
+    }
+
+//36. Valid Sudoku
+    bool isValidsub(vector<char> &cv){
+        //check suboard is valid
+        map<char, int> myMap;
+        for(auto x : cv){
+            if(x != '.'){
+                ++myMap[x];
+                if(myMap[x] > 1) return false;
+            }
+        }
+        return true;
+    }
+
+    bool isValidSudoku(vector<vector<char>>& board) {
+        //check every row
+        for(auto x : board){
+            if(!isValidsub(x)) return false;
+        }
+        //check every column
+        for(int i = 0; i < 9; ++i){
+            vector<char> cv = {};
+            for(int j = 0; j < 9; ++j){
+                cv.push_back(board[j][i]);
+            }
+            if(!isValidsub(cv)) return false;
+        }
+        //check every suboard
+        for(int i = 1; i < 9; i += 3){
+            for(int j = 1; j < 9; j += 3){
+                vector<char> cv = {board[i][j],board[i][j+1],board[i][j-1],
+                    board[i+1][j],board[i+1][j+1],board[i+1][j-1],
+                    board[i-1][j],board[i-1][j+1],board[i-1][j-1]};
+                if(!isValidsub(cv)) return false;
+            }
+        }
+        return true;
+    }
+
+//38. Count and Say
+    string countAndSay(int n) {
+        if(n == 0) return "";
+        if(n == 1) return "1";
+        string str = "11";
+        while(n > 2){
+            string s = "";
+            int num = 1;    //count the number of duplicate numbers
+            for(int i = 0; i < str.size(); ++i){
+                if(i + 1 < str.size() && str[i + 1] != str[i]){
+                    s += to_string(num) + to_string(static_cast<int>(str[i]) - 48); //cast to string
+                    num = 1;
+                }
+                else if(i + 1 < str.size() && str[i + 1] == str[i]){
+                    num++;
+                }
+                else{
+                    s += to_string(num) + to_string(static_cast<int>(str[i]) - 48);
+                }
+            }
+            --n;
+            str = s;
+        }
+        return str;
+    }
+
+//39. Combination Sum
+    void combinSum(int index, vector<vector<int>> &ivv, vector<int> iv, int target, vector<int>& candidates){
+        if(target < 0 || index > candidates.size()) return;
+        if(0 == target) ivv.push_back(iv);
+        if(0 < target){
+            for(int i = index; i < candidates.size(); ++i){
+                iv.push_back(candidates[i]);
+                int S = target - candidates[i];
+                combinSum(i, ivv, iv, S, candidates);
+                iv.pop_back();
+            }
+        }
+    }
+
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>> ivv{};
+        vector<int> iv{};
+        combinSum(0, ivv, iv, target, candidates);
+        return ivv;
+    }
+
+//40. Combination Sum II
+    void combinSum2(int index, vector<vector<int>> &ivv, vector<int> iv, int target, vector<int>& candidates){
+        if(target < 0 || index > candidates.size()) return;
+        if(0 == target) ivv.push_back(iv);
+        if(0 < target){
+            for(int i = index; i < candidates.size(); ++i){
+                iv.push_back(candidates[i]);
+                int S = target - candidates[i];
+                combinSum(i + 1, ivv, iv, S, candidates);
+                if(S < 0) iv.pop_back();
+            }
+        }
+    }
+
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        vector<vector<int>> ivv{};
+        vector<int> iv{};
+        combinSum2(0, ivv, iv, target, candidates);
+        return ivv;
     }
 };
 

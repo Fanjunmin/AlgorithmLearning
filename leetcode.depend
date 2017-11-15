@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1508945267 source:d:\cb_workspace\leetcode\main.cpp
+1509964907 source:d:\cb_workspace\leetcode\main.cpp
 	<iostream>
 	<vector>
 	<string>
@@ -25,7 +25,7 @@
 	<vector>
 	<string>
 
-1508945314 d:\cb_workspace\leetcode\include\function.h
+1509965130 d:\cb_workspace\leetcode\include\function.h
 	<vector>
 	<string>
 	<map>
@@ -35,6 +35,35 @@
 	<set>
 
 1508035715 d:\cb_workspace\leetcode\include\contest.h
+	<vector>
+	<string>
+	<map>
+	<algorithm>
+	<math.h>
+	<stack>
+	<set>
+	<numeric>
+
+1510671053 source:d:\workspace\leetcode\main.cpp
+	<iostream>
+	<vector>
+	<string>
+	<typeinfo>
+	"Function.h"
+	<math.h>
+	<set>
+	"Contest.h"
+
+1510671795 d:\workspace\leetcode\include\function.h
+	<vector>
+	<string>
+	<map>
+	<algorithm>
+	<math.h>
+	<stack>
+	<set>
+
+1508035715 d:\workspace\leetcode\include\contest.h
 	<vector>
 	<string>
 	<map>
