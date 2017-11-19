@@ -18,15 +18,17 @@ struct ListNode {
 class Function{
 public:
     template <typename T, int N>
-    void print(std::ostream &os, const T (&p)[N]){
+    void print(const T (&p)[N], std::ostream &os = cout){
         for(int i = 0; i < N; ++i)
             os << p[i] << " ";
     }
+
     template <typename T>
-    void print(std::ostream &os, vector<T> &vt){
+    void print(vector<T> &vt, std::ostream &os = cout){
         for(auto x : vt)
             os << x << " ";
     }
+
 //1. Two Sum
     vector<int> twoSum(vector<int>& nums, int target) {
         map<int, int> myMap;//key:the value of vector;value:the index of vector
@@ -823,5 +825,300 @@ public:
         combinSum2(0, ivv, iv, target, candidates);
         return ivv;
     }
+
+//41. First Missing Positive
+    int firstMissingPositive(vector<int>& nums) {
+        int len = nums.size();
+        for(int i = 0; i != len; ++i){
+            while(nums[i] > 0 && nums[i] - 1 < len && nums[nums[i] - 1] <= nums[i])
+                swap(nums[i], nums[nums[i] - 1]);
+        }
+        for(int i = 0; i != len; ++i){
+            if(nums[i] != i + 1) return i + 1;
+        }
+        return len + 1;
+    }
+
+//42. Trapping Rain Water
+    int trap(vector<int>& height) {
+        int len = height.size();
+        if(len < 3) return 0;
+        int li = 0, ri = len - 1, vol = 0;
+        //find the bounds index of left and right
+        while(li < ri && height[li] <= height[li + 1]) ++li;
+        while(li < ri && height[ri] <= height[ri - 1]) --ri;
+        //
+        while(li < ri){
+            int lh = height[li], rh = height[ri];
+            if(lh < rh){
+                while(li < ri && lh >= height[++li]){
+                    vol += (lh - height[li]);
+                }
+            }
+            else{
+                while(li < ri && rh >= height[--ri]){
+                    vol += (rh - height[ri]);
+                }
+            }
+        }
+        return vol;
+    }
+
+//43. Multiply Strings
+    string multi(string num, char ch, int index){
+        //return reverse of num * ch * 10^index
+        string s = string(index, '0');
+        int len = num.size() - 1, carry = 0, rem = 0;
+        for(int i = len; i >= 0; --i){
+            int mu = (num[i] - 48) * (ch - 48) + carry;
+            rem = mu % 10;
+            carry = mu / 10;
+            s += to_string(rem);
+        }
+        if(carry) s += to_string(carry);
+        return s;
+    }
+
+    string addstring(string s1, string s2){
+        int len1 = s1.size(), len2 = s2.size();
+        int add = 0, carry = 0, rem = 0;
+        string s{};
+        for(int i = 0; i < max(len1, len2); ++i){
+            if(i >= len1){
+                add = s2[i] - 48 + carry;
+                rem = add % 10;
+                carry = add / 10;
+            }
+            else if(i >= len2){
+                add = s1[i] - 48 + carry;
+                rem = add % 10;
+                carry = add / 10;
+            }
+            else{
+                add = s1[i] - 48 + s2[i] - 48 + carry;
+                rem = add % 10;
+                carry = add / 10;
+            }
+            s += to_string(rem);
+        }
+        if(carry) s += to_string(carry);
+        return s;
+    }
+
+    string multiply(string num1, string num2) {
+        if(num1 == "0" || num2 == "0") return "0";
+        string as = "", s;
+        int len = num2.size();
+        for(int i = 0; i < len; ++i){
+            s = multi(num1, num2[i], len - 1 - i);
+            as = addstring(as, s);
+        }
+        std::reverse(as.begin(), as.end());
+        return as;
+    }
+
+//46. Permutations
+    void getpermute(vector<vector<int>> &ivv, vector<int> &nums, vector<int> iv, int beg){
+        if(iv.size() == nums.size()){
+            ivv.push_back(iv);
+            return;
+        }
+        for(int i = beg; i < nums.size(); ++i){
+            iv.push_back(nums[i]);
+            swap(nums[i], nums[beg]);
+            getpermute(ivv, nums, iv, beg + 1);
+            //reset
+            iv.pop_back();
+            swap(nums[i], nums[beg]);
+        }
+    }
+
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> ivv{};
+        vector<int> iv{};
+        int beg = 0;
+        getpermute(ivv, nums, iv, beg);
+        return ivv;
+    }
+
+//47. Permutations II
+    /*use set and PermutationsI
+    void getPermuteUnique(set<vector<int>> &isv, vector<int> &nums, vector<int> iv, int beg){
+        if(iv.size() == nums.size()){
+            isv.insert(iv);
+            return;
+        }
+        for(int i = beg; i < nums.size(); ++i){
+            iv.push_back(nums[i]);
+            swap(nums[i], nums[beg]);
+            getPermuteUnique(isv, nums, iv, beg + 1);
+            //reset
+            iv.pop_back();
+            swap(nums[i], nums[beg]);
+        }
+    }
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        //sort(nums.begin(), nums.end());
+        set<vector<int>> isv{};
+        vector<int> iv{};
+        int beg = 0;
+        getPermuteUnique(isv, nums, iv, beg);
+        vector<vector<int>> ivv{};
+        for(auto x : isv) ivv.push_back(x);
+        return ivv;
+    }
+    */
+
+    void getPermuteUnique(vector<vector<int>> &ivv, vector<int> &nums, vector<int> iv, int beg){
+        if(iv.size() == nums.size()){
+            ivv.push_back(iv);
+            return;
+        }
+        for(int i = beg; i < nums.size(); ++i){
+            if(i != beg && nums[i] == nums[beg]) continue;
+            iv.push_back(nums[i]);
+            swap(nums[i], nums[beg]);
+            getPermuteUnique(ivv, nums, iv, beg + 1);
+            iv.pop_back();
+            swap(nums[i], nums[beg]);
+        }
+    }
+
+    vector<vector<int>> permuteUnique(vector<int>& nums){
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> ivv{};
+        vector<int> iv{};
+        getPermuteUnique(ivv, nums, iv, 0);
+        return ivv;
+    }
+
+//48. Rotate Image
+    void rotate(vector<vector<int>>& matrix) {
+        int len = matrix.size();
+        std::reverse(matrix.begin(), matrix.end());
+        //take the transpose of matrix
+        for(int i = 0; i < len; ++i){
+            for(int j = 0; j < i; ++j){
+                swap(matrix[i][j], matrix[j][i]);
+            }
+        }
+    }
+
+//50. Pow(x, n)
+    double myPow(double x, int n) {
+        //if(x == 0 || x == 1) return x;
+        if(n == 0) return 1;
+        //INT_MAX = - INT_MIN - 1
+        if(n < 0){
+            return n == INT_MIN ? 1 / x * myPow(1 / x, -n - 1) : myPow(1 / x, -n);
+        }
+        return n % 2 ? myPow(x * x, n / 2) * x: myPow(x * x, n / 2);
+    }
+
+//204. Count Primes
+    int countPrimes(int n) {
+        if(n == 0 || n == 1 || n == 2) return 0;
+        vector<int> vec(n - 2, false);
+        for(int i = 2; i < n; i += 2){
+
+        }
+    }
+
+//372. Super Pow
+    int getVectorIntoValue(vector<int> &b){
+        if(b.size() == 0) return 0;
+        int v = 0;
+        for(auto x : b){
+            v = v * 10 + x;
+        }
+        return v;
+    }
+
+    int remind(vector<int> &b, int a = 1440){
+        vector<int> iv{};
+        std::reverse(b.begin(), b.end());
+        int re = 0;
+        while(b.size() != 0){
+            int v = getVectorIntoValue(iv);
+            while(v < a && b.size() != 0){
+                iv.push_back(b.back());
+                b.pop_back();
+                v = getVectorIntoValue(iv);
+            }
+            iv = {};
+            re = v % a;
+            if(b.size() == 0) break;
+            int copyre = re;
+            while(copyre){
+                b.push_back(copyre % 10);
+                copyre /= 10;
+            }
+        }
+        return re;
+    }
+
+    int superPow(int a, vector<int>& b) {
+        //1337 = 7 * 191
+        //Eulor function E(1337) = E(7) * E(191) = 6 * 190 = 1140
+        //a^1140 = (a mod 1337)^ 1140 = 1 mod 1337
+        a = a % 1337;
+        int mul = 1;
+        int rem = remind(b, 1140);
+        while(rem){
+            mul *= a;
+            if(mul >= 1337) mul %= 1337;
+            --rem;
+        }
+        return mul;
+    }
+
+//338. Counting Bits
+    vector<int> countBits(int num) {
+        vector<int> vec(num + 1, 0);
+        for(int i = 1; i <= num; ++i){
+            int x = i;
+            while(x){
+                ++vec[i];
+                //turn the last "1" of x into "0";
+                x = x & (x - 1);
+            }
+        }
+        return vec;
+    }
+
+//541. Reverse String II
+    string reverseStr(string s, int k) {
+        if(s.size() < k){
+            std::reverse(s.begin(), s.end());
+            return s;
+        }
+        for(int i = 0; i < s.size(); i += 2 * k){
+            //use No.557 function reverseString;
+            if(i + k <= s.size()) reverseString(s, i, i + k);
+            else reverseString(s, i, s.size());
+        }
+        return s;
+    }
+
+//557. Reverse Words in a String III
+    void reverseString(string &s, int beg, int en){
+        while(beg <= --en){
+            swap(s[beg], s[en]);
+            ++beg;
+        }
+    }
+
+    string reverseWords(string s) {
+        int beg = 0;
+        for(int i = 0; i < s.size(); ++i){
+            if(s[i] == ' '){
+                reverseString(s, beg, i);
+                beg = i + 1;
+            }
+        }
+        reverseString(s, beg, s.size());
+        return s;
+    }
+
 };
 
