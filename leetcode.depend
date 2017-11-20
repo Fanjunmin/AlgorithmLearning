@@ -44,7 +44,7 @@
 	<set>
 	<numeric>
 
-1511088330 source:d:\workspace\leetcode\main.cpp
+1511168218 source:d:\workspace\leetcode\main.cpp
 	<iostream>
 	<vector>
 	<string>
@@ -53,8 +53,9 @@
 	<math.h>
 	<set>
 	"Contest.h"
+	"MathOperations.h"
 
-1511088389 d:\workspace\leetcode\include\function.h
+1511165404 d:\workspace\leetcode\include\function.h
 	<vector>
 	<string>
 	<map>
@@ -72,4 +73,9 @@
 	<stack>
 	<set>
 	<numeric>
+
+1511168065 source:d:\workspace\leetcode\src\mathoperations.cpp
+	"MathOperations.h"
+
+1511168354 d:\workspace\leetcode\include\mathoperations.h
 

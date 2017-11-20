@@ -1015,6 +1015,50 @@ public:
         return n % 2 ? myPow(x * x, n / 2) * x: myPow(x * x, n / 2);
     }
 
+//51. N-Queens
+    bool isConfilct(vector<int> vec, int index){
+        if(index == 0) return false;
+        for(int i = 0; i < index; ++i){
+            if(vec[i] == vec[index] || abs(i - index) == abs(vec[i] - vec[index])) return true;
+        }
+        return false;
+    }
+
+    void returnArray(int index, int n, vector<vector<int>> &vvec, vector<int> &vec){
+        if(index == n){
+            vvec.push_back(vec);
+            print(vec);
+            cout << endl;
+            return;
+        }
+        for(int i = index; i < n; ++i){
+            for(int j = 0; j < n; ++j){
+                vec[index] = j;
+                if(!isConfilct(vec, index)){
+                    returnArray(index + 1, n, vvec, vec);
+                }
+                else return;
+            }
+        }
+    }
+
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<int>> vvec{};
+        vector<int> vec(n, 0);
+        returnArray(0, n, vvec, vec);
+        vector<vector<string>> vvecs{};
+        vector<string> vecs(n, " ");
+        for(auto x : vvec){
+            for(int i = 0; i < n; ++i){
+                for(int j = 0; j < n; ++j){
+                    vecs[i][j] =  x[i] == j ? 'Q' : '.';
+                }
+            }
+            vvecs.push_back(vecs);
+        }
+        return vvecs;
+    }
+
 //204. Count Primes
     int countPrimes(int n) {
         if(n == 0 || n == 1 || n == 2) return 0;
@@ -1022,6 +1066,23 @@ public:
         for(int i = 2; i < n; i += 2){
 
         }
+    }
+
+//231. Power of Two
+    bool isPowerOfTwo(int n) {
+        if(n <= 0) return false;
+        return !(n & (n - 1));
+    }
+
+//371. Sum of Two Integers
+    int getSum(int a, int b) {
+        //return b == 0 ? a : getSum(a ^ b, (a & b) << 1);
+        if(b == 0) return a; //没有进位的时候完成运算
+        int sum, carry;
+        sum = a ^ b;        //没有进位的加法运算
+        carry = (a & b) << 1;   //进位（左移）
+        std::cout << sum << std::ends << carry << endl;
+        return getSum(sum, carry); //递归
     }
 
 //372. Super Pow
