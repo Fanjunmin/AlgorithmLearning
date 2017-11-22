@@ -14,5 +14,8 @@ int main()
 {
     Function f;
     Contest g;
-    cout << MathOperations::absValue(-9);
+    vector<vector<int>> obstacleGrid = {{0,0,0},{0,1,0},{0,0,0}};
+    //f.print(obstacleGrid);
+    cout << f.uniquePathsWithObstacles(obstacleGrid);
+
 }

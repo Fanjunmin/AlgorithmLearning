@@ -36,7 +36,9 @@
 		</Compiler>
 		<Unit filename="include/Contest.h" />
 		<Unit filename="include/Function.h" />
+		<Unit filename="include/MathOperations.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/MathOperations.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

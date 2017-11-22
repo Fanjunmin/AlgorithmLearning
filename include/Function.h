@@ -15,16 +15,40 @@ struct ListNode {
     ListNode(int x) : val(x), next(NULL) {}
 };
 
+//* Definition for an interval.
+struct Interval {
+    int start;
+    int end;
+    Interval() : start(0), end(0) {}
+    Interval(int s, int e) : start(s), end(e) {}
+};
+
 class Function{
 public:
     template <typename T, int N>
-    void print(const T (&p)[N], std::ostream &os = cout){
+    static void print(const T (&p)[N], std::ostream &os = cout){
         for(int i = 0; i < N; ++i)
             os << p[i] << " ";
     }
 
+    template <typename T, int M, int N>
+    static void print(const T (&p)[M][N], std::ostream &os = cout){
+        for(int i = 0; i < M; ++i){
+            print(p[i], os);
+            os << '\n';
+        }
+    }
+
     template <typename T>
-    void print(vector<T> &vt, std::ostream &os = cout){
+    static void print(vector<vector<T>> &vt, std::ostream &os = cout){
+        for(auto x : vt){
+            print(x, os);
+            os << '\n';
+        }
+    }
+
+    template <typename T>
+    static void print(vector<T> &vt, std::ostream &os = cout){
         for(auto x : vt)
             os << x << " ";
     }
@@ -1017,28 +1041,21 @@ public:
 
 //51. N-Queens
     bool isConfilct(vector<int> vec, int index){
-        if(index == 0) return false;
         for(int i = 0; i < index; ++i){
-            if(vec[i] == vec[index] || abs(i - index) == abs(vec[i] - vec[index])) return true;
+            if(vec[i] == vec[index] || index - i == abs(vec[i] - vec[index])) return true;
         }
         return false;
     }
 
-    void returnArray(int index, int n, vector<vector<int>> &vvec, vector<int> &vec){
+    void returnArray(int index, int n, vector<vector<int>> &vvec, vector<int> vec){
+        //the Kth element in vec means Kth queen's location is (K, vec[K]);
         if(index == n){
             vvec.push_back(vec);
-            print(vec);
-            cout << endl;
             return;
         }
-        for(int i = index; i < n; ++i){
-            for(int j = 0; j < n; ++j){
-                vec[index] = j;
-                if(!isConfilct(vec, index)){
-                    returnArray(index + 1, n, vvec, vec);
-                }
-                else return;
-            }
+        for(int j = 0; j < n; ++j){
+            vec[index] = j;
+            if(!isConfilct(vec, index)) returnArray(index + 1, n, vvec, vec);
         }
     }
 
@@ -1046,17 +1063,189 @@ public:
         vector<vector<int>> vvec{};
         vector<int> vec(n, 0);
         returnArray(0, n, vvec, vec);
-        vector<vector<string>> vvecs{};
-        vector<string> vecs(n, " ");
+        vector<vector<string>> vvecstr{};
         for(auto x : vvec){
+            vector<string> vecstr(n, string(n, '.'));
             for(int i = 0; i < n; ++i){
-                for(int j = 0; j < n; ++j){
-                    vecs[i][j] =  x[i] == j ? 'Q' : '.';
-                }
+                vecstr[i][x[i]] = 'Q';
             }
-            vvecs.push_back(vecs);
+            vvecstr.push_back(vecstr);
         }
-        return vvecs;
+        return vvecstr;
+    }
+
+//52. N-Queens II
+    int totalNQueens(int n) {
+        //use No.51 function returnArray;
+        vector<vector<int>> vvec{};
+        vector<int> vec(n, 0);
+        returnArray(0, n, vvec, vec);
+        return vvec.size();
+    }
+
+//53. Maximum Subarray
+    int maxSubArray(vector<int>& nums) {
+        //state transition equation:
+        //maxSubArray(nums[0,i])=max(0,maxSubArray(nums[0,i-1]))+nums[i]
+        if(nums.empty()) return 0;
+        int maxSum =nums[0], temp = nums[0];
+        for(int i = 1; i < nums.size(); ++i){
+            temp = max(0, temp) + nums[i];
+            maxSum = max(maxSum, temp);
+        }
+        return maxSum;
+    }
+
+//54. Spiral Matrix
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        if(matrix.empty()) return {};
+        int m = matrix.size(), n = matrix[0].size();
+        vector<int> sp(m * n);
+
+    }
+
+//55. Jump Game
+    bool canJump(vector<int>& nums) {
+        if(nums.size() == 1) return true;
+        int pre = nums.size() - 1;
+        for(int i = nums.size() - 2; i >= 0; --i){
+            //from back to front, if we can reach from position i;
+            //Then judge any position that can reach to i;
+            if(nums[i] + i >= pre) pre = i;
+        }
+        //if start position is 0
+        return !pre;
+    }
+
+//56. Merge Intervals
+    vector<Interval> merge(vector<Interval>& intervals) {
+        if(intervals.empty()) return intervals;
+        //sort by first element:start
+        sort(intervals.begin(), intervals.end(),
+             [](Interval &Int1, Interval &Int2){return Int1.start < Int2.start;});
+        //why "<=" Runtime error
+        vector<Interval> re{};
+        re.push_back(intervals[0]);
+        //[a1,b1],[a2,b2]
+        //a2 > b1, put[a2, b2] in vector re;
+        //a2 <= b1, change[a1, b1] into [a1, max(b1, b2)]
+        for(int i = 1; i < intervals.size(); ++i){
+            if(intervals[i].start > re.back().end) re.push_back(intervals[i]);
+            else re.back().end = max(re.back().end, intervals[i].end);
+        }
+        return re;
+    }
+
+//57. Insert Interval
+    vector<Interval> insert(vector<Interval>& intervals, Interval newInterval) {
+        if(intervals.empty()){
+            intervals.push_back(newInterval);
+            return intervals;
+        }
+        sort(intervals.begin(), intervals.end(), [](Interval a, Interval b){return a.start < b.start;});
+        int i = 0, j = intervals.size() - 1;
+        //find the first and last position which are overlaped
+        for(; i < intervals.size(); ++i){
+            if(newInterval.start <= intervals[i].end){
+                newInterval.start = min(newInterval.start, intervals[i].start);
+                break;
+            }
+        }
+        for(; j >= 0; --j){
+            if(newInterval.end >= intervals[j].start){
+                newInterval.end = max(newInterval.end, intervals[j].end);
+                break;
+            }
+        }
+        //get rid of position from i to j and insert newInterval into position i
+        intervals.erase(intervals.begin() + i, intervals.begin() + j + 1);
+        intervals.insert(intervals.begin() + i, newInterval);
+        return intervals;
+    }
+
+//58. Length of Last Word
+    int lengthOfLastWord(string s) {
+        if(s.empty()) return 0;
+        int i = s.size() - 1, count = 0;
+        for(; i >= 0; --i){
+            if(s[i] != ' ') break;
+        }
+        for(; i >= 0; --i){
+            if(s[i] != ' ') ++count;
+            else break;
+        }
+        return count;
+    }
+
+//60. Permutation Sequence
+    int factorial(int n){
+        if(n == 0) return 1;
+        return n * factorial(n - 1);
+    }
+
+    string getPermutation(int n, int k) {
+        //position in [l*(n-1)!, (l+1)*(n-1)!) must begin with l+1
+        //then get rid of beginning and iterate
+        string s = "";
+        vector<int> vec{1,2,3,4,5,6,7,8,9};
+        --k;
+        for(int i = n - 1; i >= 0; --i){
+            int fact = factorial(i);
+            s.append(to_string(vec[k / fact]));
+            vec.erase(vec.begin() + k / fact);  //if get number m then get rid of it
+            k %= fact;            //change k into k%fact
+        }
+        return s;
+    }
+
+//62. Unique Paths
+    int uniquePaths(int m, int n) {
+        /*iteration  Time Limit Exceeded
+        if(m == 1 || n == 1) return 1;
+        return uniquePaths(m - 1, n) + uniquePaths(m, n - 1);
+        */
+        //dp
+        if(m == 1 || n == 1) return 1;
+        int arr[m][n] = {};
+        for(int i = 0; i < m; ++i) arr[i][0] = 1;
+        for(int i = 0; i < n; ++i) arr[0][i] = 1;
+        for(int i = 1; i < m; ++i){
+            for(int j = 1; j < n; ++j){
+                arr[i][j] = arr[i - 1][j] + arr[i][j - 1];
+            }
+        }
+        return arr[m - 1][n - 1];
+    }
+
+//63. Unique Paths II
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size(), n = obstacleGrid[0].size();
+        int arr[m][n] = {0};
+        int a = 0, b = 0;
+        for(;a < m; ++a) if(obstacleGrid[a][0] == 1) break;
+        for(int i = 0; i < m; ++i) arr[i][0] = i < a ? 1 : 0;
+        for(;b < n; ++b) if(obstacleGrid[0][b] == 1) break;
+        for(int i = 0; i < n; ++i) arr[0][i] = i < b ? 1 : 0;
+        for(int i = 1; i < m; ++i){
+            for(int j = 1; j < n; ++j){
+                if(obstacleGrid[i][j] == 1) arr[i][j] = 0;
+                else arr[i][j] = arr[i - 1][j] + arr[i][j - 1];
+            }
+        }
+        return arr[m - 1][n - 1];
+    }
+
+//64. Minimum Path Sum
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        for(int i = 1; i < m; ++i) grid[i][0] += grid[i - 1][0];
+        for(int i = 1; i < n; ++i) grid[0][i] += grid[0][i - 1];
+        for(int i = 1; i < m; ++i){
+            for(int j = 1; j < n; ++j){
+                grid[i][j] += min(grid[i - 1][j], grid[i][j - 1]);
+            }
+        }
+        return grid[m - 1][n - 1];
     }
 
 //204. Count Primes
@@ -1095,7 +1284,7 @@ public:
         return v;
     }
 
-    int remind(vector<int> &b, int a = 1440){
+    int remainder(vector<int> &b, int a = 1440){
         vector<int> iv{};
         std::reverse(b.begin(), b.end());
         int re = 0;
@@ -1124,7 +1313,7 @@ public:
         //a^1140 = (a mod 1337)^ 1140 = 1 mod 1337
         a = a % 1337;
         int mul = 1;
-        int rem = remind(b, 1140);
+        int rem = remainder(b, 1140);
         while(rem){
             mul *= a;
             if(mul >= 1337) mul %= 1337;
