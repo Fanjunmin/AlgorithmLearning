@@ -1,3 +1,6 @@
+#ifndef FUNCTION_H
+#define FUNCTION_H
+
 #include <vector>
 #include <string>
 #include <map>
@@ -5,52 +8,65 @@
 #include <math.h>
 #include <stack>
 #include <set>
-
-
+#include <utility>
+#include <iostream>
+#include <typeinfo>
+#include <math.h>
+#include <set>
+#include "Print.h"
 using namespace std;
- //* Definition for singly-linked list.
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(NULL) {}
-};
-
-//* Definition for an interval.
-struct Interval {
-    int start;
-    int end;
-    Interval() : start(0), end(0) {}
-    Interval(int s, int e) : start(s), end(e) {}
-};
 
 class Function{
 public:
-    template <typename T, int N>
-    static void print(const T (&p)[N], std::ostream &os = cout){
-        for(int i = 0; i < N; ++i)
-            os << p[i] << " ";
-    }
-
-    template <typename T, int M, int N>
-    static void print(const T (&p)[M][N], std::ostream &os = cout){
-        for(int i = 0; i < M; ++i){
-            print(p[i], os);
-            os << '\n';
+    vector<vector<int>> getZigzag(int l){
+        /*
+        vector<vector<int>> vec(l, vector<int>(l, 0));
+        for(int k = 0; k < l; ++k){
+            for(int i = 0; i <= k; ++i){
+                int j = k - i;
+                vec[i][j] = (k * (k + 1) / 2) + (k % 2 ? i : j);
+            }
         }
-    }
-
-    template <typename T>
-    static void print(vector<vector<T>> &vt, std::ostream &os = cout){
-        for(auto x : vt){
-            print(x, os);
-            os << '\n';
+        for(int k = 2 * l - 2; k >= l; --k){
+            for(int i = k - l + 1; i < l; ++i){
+                int j = k - i;
+                if(l % 2 == 0){
+                    vec[i][j] = l * l - 1 - (2*l-k-2)*(2*l-k-1)/2 - (k % 2 ? l - 1 - j : l - 1 - i);
+                }
+                else{
+                    vec[i][j] = l * l - 1 - (2*l-k-2)*(2*l-k-1)/2 - (k % 2 ? l - 1 - i : l - 1 - j);
+                }
+            }
         }
-    }
+        */
 
-    template <typename T>
-    static void print(vector<T> &vt, std::ostream &os = cout){
-        for(auto x : vt)
-            os << x << " ";
+        vector<vector<int>> vec(l, vector<int>(l, 0));
+        /*
+        for(int k = 0; k < l; ++k){
+            for(int i = 0; i <= k; ++i){
+                int j = k - i;
+                int diagonalSum = k * (k + 1) / 2;
+                vec[i][j] = diagonalSum + (k % 2 ? i : j);
+            }
+        }
+        int allSum = l * l - 1;
+        for(int k = 2 * l - 2; k >= l; --k){
+            for(int i = k - l + 1; i < l; ++i){
+                int j = k - i;
+                int diagonalSum =(2 * l - k - 2) * (2 * l - k - 1 ) / 2;
+                int s = allSum - diagonalSum - (l - 1);
+                vec[i][j] = s + ((l ^ k) % 2 ? i : j);
+            }
+        }
+        */
+        for(int i = 0; i < l; ++i){
+            for(int j = 0; j < l; ++j){
+                int k = i + j;
+                if(k < l) vec[i][j] = k * (k + 1) / 2 + (k % 2 ? i : j);
+                else vec[i][j] = l * (l - 1) - (2 * l - k - 2) * (2 * l - k - 1 ) / 2 + ((l ^ k) % 2 ? i : j);
+            }
+        }
+        return vec;
     }
 
 //1. Two Sum
@@ -1098,10 +1114,21 @@ public:
 
 //54. Spiral Matrix
     vector<int> spiralOrder(vector<vector<int>>& matrix) {
-        if(matrix.empty()) return {};
+        if (matrix.empty()) return {};
         int m = matrix.size(), n = matrix[0].size();
-        vector<int> sp(m * n);
-
+        vector<int> spiral(m * n, 0);
+        int  i = 0, d = m - 1, j = 0, r = n - 1, k = 0;
+        while (true) {
+            for (int col = j; col <= r; col++) spiral[k++] = matrix[i][col]; // turn right
+            if (++i > d) break;
+            for (int row = i; row <= d; row++) spiral[k++] = matrix[row][r]; // turn down
+            if (--r < j) break;
+            for (int col = r; col >= j; col--) spiral[k++] = matrix[d][col]; //turn left
+            if (--d < i) break;
+            for (int row = d; row >= i; row--) spiral[k++] = matrix[row][j]; //turn right
+            if (++j > r) break;
+        }
+        return spiral;
     }
 
 //55. Jump Game
@@ -1248,14 +1275,349 @@ public:
         return grid[m - 1][n - 1];
     }
 
-//204. Count Primes
-    int countPrimes(int n) {
-        if(n == 0 || n == 1 || n == 2) return 0;
-        vector<int> vec(n - 2, false);
-        for(int i = 2; i < n; i += 2){
+//66. Plus One
+    vector<int> plusOne(vector<int>& digits) {
+        if(digits.empty()) return {1};
+        int carry = 1;
+        for(int i = digits.size() - 1; i >= 0; --i){
+            int sum = digits[i] + carry;
+            digits[i] = sum % 10;
+            carry = sum / 10;
+        }
+        if(carry) digits.insert(digits.begin(), 1);
+        return digits;
+    }
 
+//67. Add Binary
+    string addBinary(string a, string b) {
+        int len1 = a.size(), len2 = b.size();
+        if(len1 < len2) return addBinary(b, a);
+        int carry = 0;
+        for(int i = 0; i < len1; ++i){
+            if(len2 - i - 1 >= 0){
+                int sum = a[len1 - i - 1] + b[len2 - i - 1] + carry - 96;
+                a[len1 - i - 1] = sum % 2 + 48;
+                carry = sum / 2;
+            }
+            else{
+                int sum = a[len1 - i - 1] + carry - 48;
+                a[len1 - i - 1] = sum % 2 + 48;
+                carry = sum / 2;
+            }
+        }
+        if(carry) a.insert(a.begin(), '1');
+        return a;
+    }
+
+//69. Sqrt(x)
+    int mySqrt(int x) {
+        if(x == 0 || x == 1) return x;
+        int root, lhs = 0, rhs = x;
+        while(lhs + 1 < rhs){
+            root = (lhs + rhs) / 2;
+            if(root == x / root) return root; //must not use root * root == x
+            root > x / root ? rhs = root : lhs = root;
+        }
+        return rhs > x / rhs ? lhs : rhs;
+    }
+
+//70. Climbing Stairs
+    int climbStairs(int n) {
+        if(n <= 2) return n;
+        vector<int> dp(n, 1);
+        dp[1] = 2;
+        for(int i = 2; i < n; ++i){
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n - 1];
+    }
+
+//71. Simplify Path
+    string simplifyPath(string path) {
+        if(path.empty()) return path;
+        int i = path.size() - 1;
+        for(; i >= 0; --i){
+            if(path[i] == '/') break;
+        }
+        int j = i - 1;
+        for(; j >= 0; --j){
+            if(path[j] == '/') break;
+        }
+        string s = j >= 0 ? path.substr(j, i - j) : "";
+        return s;
+    }
+
+//72. Edit Distance
+    int minDistance(string word1, string word2) {
+        int len1 = word1.size() + 1, len2 = word2.size() + 1;
+        vector<vector<int>> dp(len1, vector<int>(len2, 0));
+        for(int i = 0; i < len1; ++i) dp[i][0] = i;
+        for(int j = 0; j < len2; ++j) dp[0][j] = j;
+        for(int i = 1; i < len1; ++i){
+            for(int j = 1; j < len2; ++j){
+                if(word1[i - 1] == word2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+                else dp[i][j] = 1 + min(dp[i][j - 1], min(dp[i - 1][j - 1], dp[i - 1][j]));
+            }
+        }
+        return dp[len1 - 1][len2 - 1];
+    }
+
+//73. Set Matrix Zeroes
+    void setZeroes(vector<vector<int>>& matrix) {
+        set<int> row, col;
+        //record the position
+        for(int i = 0; i < matrix.size(); ++i){
+            for(int j = 0; j < matrix[0].size(); ++j){
+                if(matrix[i][j] == 0){
+                    row.insert(row.begin(), i);
+                    col.insert(col.begin(), j);
+                }
+            }
+        }
+        for(auto r : row){
+            for(int j = 0; j < matrix[0].size(); ++j){
+                matrix[r][j] = 0;
+            }
+        }
+        for(auto c : col){
+            for(int i = 0; i < matrix.size(); ++i){
+                matrix[i][c] = 0;
+            }
         }
     }
+
+//74. Search a 2D Matrix
+    bool binary_search(vector<int> vec, vector<int>::iterator iter1, vector<int>::iterator iter2, const int &T){
+        if(vec.empty()) return false;
+        while(iter1 < iter2){
+            int dis = iter2 - iter1;
+            if(dis == 1) return *iter1 == T;
+            auto mid = iter1 + dis / 2;
+            if(*mid == T) return true;
+            else if(*mid < T) iter1 = mid;
+            else iter2 = mid;
+        }
+    }
+
+    bool searchMatrix(vector<vector<int>>& matrix, int target) {
+        if(matrix.empty() || matrix[0].empty()) return false;
+        int row = matrix.size() - 1;
+        int rowbegin = 0;
+        while(rowbegin <= row){
+            if(target > matrix[row].back() ||target < matrix[rowbegin].front()){
+                return false;
+            }
+            else if(target >= matrix[row].front() && target <= matrix[row].back()){
+                return binary_search(matrix[row], matrix[row].begin(), matrix[row].end(), target);
+            }
+            else if(target >= matrix[rowbegin].front() && target <= matrix[rowbegin].back()){
+                return binary_search(matrix[rowbegin],matrix[rowbegin].begin(), matrix[rowbegin].end(), target);
+            }
+            else{
+                if(row == rowbegin + 1) return false;
+                else{
+                    int mid = (row + rowbegin) / 2;
+                    target >= matrix[mid].front() ? rowbegin = mid : row = mid;
+                }
+            }
+        }
+    }
+
+//75. Sort Colors
+    void quickSort(vector<int> &nums, int lo, int hi){
+        if(lo >= hi) return;
+        int i = lo, j = hi, key = nums[lo];
+        while(i < j){
+            while(i < j && nums[j] >= key) --j;
+            while(i < j && nums[i] <= key) ++i;
+            if(i < j) swap(nums[i], nums[j]);
+        }
+        cout << i << " " << nums[i] << endl;
+        nums[lo] = nums[i];
+        nums[i] = key;
+        quickSort(nums, lo, i - 1);
+        quickSort(nums, i + 1, hi);
+    }
+
+    void sortColors(vector<int>& nums) {
+        quickSort(nums, 0, nums.size() - 1);
+    }
+
+//77. Combinations
+    void combineTrack(vector<vector<int>> &vvec, vector<int> &vec, int beg, int n, int k){
+        if(vec.size() == k){
+            vvec.push_back(vec);
+            return;
+        }
+        for(int i = beg; i <= n; ++i){
+            vec.push_back(i);
+            combineTrack(vvec, vec, i + 1, n, k);
+            vec.pop_back();
+        }
+    }
+
+    vector<vector<int>> combine(int n, int k) {
+        if(n <= 0 || k > n) return {};
+        vector<vector<int>> vvec{};
+        vector<int> vec{};
+        combineTrack(vvec, vec, 1, n, k);
+        cout << vvec.size();
+        return vvec;
+    }
+
+//78. Subsets
+    void subsetsTrack(vector<vector<int>> &vvec, vector<int>& nums, vector<int> vec, int beg){
+        if(beg == nums.size()){
+            vvec.push_back(vec);
+            return;
+        }
+        else{
+            subsetsTrack(vvec, nums, vec, beg + 1);
+            vec.push_back(nums[beg]);
+            subsetsTrack(vvec, nums, vec, beg + 1);
+        }
+    }
+
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> vvec{};
+        vector<int> vec{};
+        subsetsTrack(vvec, nums, vec, 0);
+        return vvec;
+    }
+
+//79. Word Search
+    bool wordSearch(vector<vector<char>>& board, string word, int x, int y, int beg, bool sign){
+        //judge position(x,y) in board exist word?
+        sign = board[x][y] != word[beg] ? false : true;
+        cout << beg << " " << sign << endl;
+        //if(!sign) return false;
+        if(sign && beg == word.size() - 1) return true;
+        if(x - 1 >= 0 && sign) wordSearch(board, word, x - 1, y, beg + 1, sign);
+        if(x + 1 < board.size() && sign) wordSearch(board, word, x + 1, y, beg + 1, sign);
+        if(y - 1 >= 0 && sign) wordSearch(board, word, x, y - 1, beg + 1, sign);
+        if(y + 1 < board[0].size() && sign) wordSearch(board, word, x, y + 1, beg + 1, sign);
+    }
+
+    bool exist(vector<vector<char>>& board, string word) {
+        if(board.size() == 0 || board[0].size() == 0 || word == "") return false;
+        for(int i = 0; i < board.size(); ++i){
+            for(int j = 0; j < board[0].size(); ++j){
+                bool sign;
+                if(wordSearch(board, word, i , j, 0, sign)) return true;
+            }
+        }
+        return false;
+    }
+
+//80. Remove Duplicates from Sorted Array II
+    int removeDuplicates2(vector<int>& nums) {
+        map<int, int> myMap;
+        int sum = 0;
+        for(auto num : nums){
+            if(myMap[num] < 2) ++myMap[num];
+        }
+        auto iter = myMap.begin();
+        while(iter != myMap.end()){
+            sum += iter->second;
+            ++iter;
+        }
+        return sum;
+    }
+
+//82. Remove Duplicates from Sorted List II
+    ListNode* deleteDuplicates1(ListNode* head) {
+        //recursion
+        if(head == NULL || head->next == NULL) return head;
+        ListNode *i = head, *j = head->next;
+        while(j != NULL && i->val == j->val) j = j->next;
+        if(j && i->next == j){
+            head->next = deleteDuplicates1(j);
+            return head;
+        }
+        else return deleteDuplicates1(j);
+    }
+
+//83. Remove Duplicates from Sorted List
+    ListNode* deleteDuplicates(ListNode* head) {
+        if(head == NULL) return head;
+        ListNode *temp = head, *i = head, *j = head;
+        while(j != NULL){
+            if(j->val != i->val){
+                i->next = j;
+                i = i->next;
+            }
+            j = j->next;
+        }
+        i->next = NULL;
+        return temp;
+    }
+
+//84. Largest Rectangle in Histogram
+    int largestRectangleArea(vector<int>& heights) {
+        if(heights.empty()) return 0;
+        if(heights.size() == 1) return heights[0];
+        heights.push_back(0);   //put 0 back of heights
+        int area = 0;
+        stack<int> myStack{};
+        for(int i = 0; i < heights.size(); ++i){
+            //it means the index from bottom to top of myStack, by mapping, heights[index] is from small to large
+            //if we find the top one index in myStack, heights[index] is larger than heights[i], begin to compute
+            while(!myStack.empty() && heights[myStack.top()] >= heights[i]){
+                int index = myStack.top();
+                myStack.pop();
+                int s = myStack.empty() ? -1 : myStack.top();
+                area = max(area, heights[index] * (i - s - 1));
+            }
+            myStack.push(i);
+        }
+        return area;
+    }
+
+//85. Maximal Rectangle
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if(matrix.size() == 0 || matrix[0].size() == 0) return 0;
+        int m = matrix.size(), n = matrix[0].size(), Max = 0;
+        vector<int> vec(n, 0);
+        for(int i = 0; i < m; ++i){
+            for(int j = 0; j < n; ++j){
+                vec[j] = matrix[i][j] == '1' ? vec[j] + 1 : 0;
+            }
+            Max = max(Max, largestRectangleArea(vec));
+        }
+        return Max;
+    }
+
+//88. Merge Sorted Array
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        vector<int> vec(nums1.begin(), nums1.begin() + m);
+        int i = 0, j = 0;
+        while(i + j < m + n){
+            if(i >= m || (j < n && nums2[j] <= vec[i])){
+                nums1[i + j] = nums2[j];
+                ++j;
+            }
+            else{
+                nums1[i + j] = vec[i];
+                ++i;
+            }
+        }
+    }
+
+//89. Gray Code
+    vector<int> grayCode(int n) {
+        if(n == 0) return {0};
+        int j = 0;
+        vector<int> vec(power(2, n), 0);
+        while(j++ < n){
+            int m = power(2, j);
+            for(int i = m / 2; i < m; ++i){
+                vec[i] = m / 2 + vec[m - i - 1];
+            }
+        }
+        return vec;
+    }
+
+//204. Count Primes
 
 //231. Power of Two
     bool isPowerOfTwo(int n) {
@@ -1371,4 +1733,6 @@ public:
     }
 
 };
+
+#endif // FUNCTION_H
 

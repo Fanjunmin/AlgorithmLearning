@@ -36,7 +36,10 @@
 		</Compiler>
 		<Unit filename="include/Contest.h" />
 		<Unit filename="include/Function.h" />
+		<Unit filename="include/Interval.h" />
+		<Unit filename="include/ListNode.h" />
 		<Unit filename="include/MathOperations.h" />
+		<Unit filename="include/Print.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/MathOperations.cpp" />
 		<Extensions>
