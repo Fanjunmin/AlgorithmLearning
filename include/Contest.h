@@ -6,7 +6,6 @@
 #include <stack>
 #include <set>
 #include <numeric>
-#include <Function.h>
 
 using namespace std;
 class Contest
@@ -96,6 +95,7 @@ public:
         }
         return vec.size();
     }
+
     int monotoneIncreasingDigits(int N) {
         if(N <= 10) return N - 1;
         vector<int> vec{N % 10};

@@ -731,22 +731,49 @@ public:
 
 //32. Longest Valid Parentheses
     int longestValidParentheses(string s) {
+        /*
+        // DP O(n^2)
         int len = s.size(), maxLen = 0;
         if(len < 2) return 0;
-        stack<int> si;
-        si.push(-1);
-        for(int i = 0; i < len; ++i){
-            cout << si.top() << ends;
-            if(s[i] == '(') si.push(i);
-            else{
-                si.pop();
-                if(si.empty()) si.push(i);
-                else maxLen = max(maxLen, i - si.top());
+        bool dp[len][len];
+        for(int k = 0; k < len; ++k){
+            for(int i = 0; i + k < len; ++i){
+                int j = k + i;
+                if((j - i) % 2 == 0) dp[i][j] = 0;
+                else{
+                    if(s[i] == '(' && s[j] == ')'){
+                        if(i == j - 1) dp[i][j] = 1;
+                        else{
+                            dp[i][j] = (dp[i + 1][j - 1]) || (dp[i][i + 1] && dp[i + 2][j])
+                                        || (dp[j - 1][j] && dp[i][j - 2]);
+                        }
+                    }
+                    else dp[i][j] = 0;
+                }
+                maxLen = max(maxLen, dp[i][j] ? j - i + 1 : 0);
             }
         }
-        cout << endl;
-        return si.empty() ? len : maxLen;
-
+        return maxLen;
+        */
+        //DP O(n)
+        int len = s.size(), maxLen = 0;
+        if(len < 2) return 0;
+        vector<int> dp(len, 0);
+        for(int i = 1; i < len; ++i){
+            if(s[i] == ')'){
+                if(s[i - 1] == '('){
+                    dp[i] = 2 + (i >= 2 ? dp[i - 2] : 0);
+                }
+                else{
+                    int sym = i - 1 - dp[i - 1];
+                    if(sym >= 0 && s[sym] == '('){
+                        dp[i] = dp[i - 1] + 2 + (sym >= 1 ? dp[sym - 1] : 0);
+                    }
+                }
+            }
+            maxLen = max(maxLen, dp[i]);
+        }
+        return maxLen;
     }
 
 //35. Search Insert Position
@@ -957,6 +984,20 @@ public:
         return as;
     }
 
+//45. Jump Game II
+    int jump(vector<int>& nums) {
+        int maxReach = 0, jumpCount = 0, curEnd = 0;
+        if(nums.size() < 2) return nums.size();
+        for(int i = 0; i < nums.size(); ++i){
+            maxReach = max(maxReach, i + nums[i]);
+            if(i == curEnd){
+                jumpCount++;
+                curEnd = maxReach;
+            }
+        }
+        return jumpCount;
+    }
+
 //46. Permutations
     void getpermute(vector<vector<int>> &ivv, vector<int> &nums, vector<int> iv, int beg){
         if(iv.size() == nums.size()){
@@ -1044,6 +1085,23 @@ public:
         }
     }
 
+//49. Group Anagrams
+    //bool mapEqual(map<char, int> &map1, map<char, int> &map2);
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        map<map<char, int>, vector<string>> myMap;
+        for(int i = 0; i < strs.size(); ++i){
+            map<char, int> map1{};
+            for(auto str : strs[i]) ++map1[str];
+            myMap[map1].push_back(strs[i]);
+        }
+        vector<vector<string>> vec(myMap.size(), vector<string>{});
+        int k = 0;
+        for(auto iter = myMap.begin(); iter != myMap.end(); ++iter){
+            vec[k++] = iter->second;
+        }
+        return vec;
+    }
+
 //50. Pow(x, n)
     double myPow(double x, int n) {
         //if(x == 0 || x == 1) return x;
@@ -1091,12 +1149,34 @@ public:
     }
 
 //52. N-Queens II
+    //*with bit maniplutation
+    void test(int row, int ld, int rd, int &sum, int n){
+        cout << row << ends << ld << ends << rd << endl;
+        int upperlim = (1 << n) - 1;
+        if(row != upperlim){
+            long pos = upperlim & (~(row | ld | rd));//pos二进制中的1表示某一行的这个位置不能放
+            while(pos){
+                long p = pos & (~pos + 1);//找到从右数的第一个1
+                pos -= p;//去掉从右数的第一个1
+                test(row + p, (ld + p) << 1, (rd + p) >> 1, sum, n);//对下一行有影响，要移动一位
+            }
+        }
+        else sum++;
+    }
+    //*/
     int totalNQueens(int n) {
+        /*
         //use No.51 function returnArray;
         vector<vector<int>> vvec{};
         vector<int> vec(n, 0);
         returnArray(0, n, vvec, vec);
         return vvec.size();
+        */
+        //*
+        int sum = 0;
+        test(0, 0, 0, sum, n);
+        return sum;
+        //*/
     }
 
 //53. Maximum Subarray
@@ -1202,6 +1282,24 @@ public:
             else break;
         }
         return count;
+    }
+
+//59. Spiral Matrix II
+    vector<vector<int>> generateMatrix(int n) {
+        if (n == 0) return {};
+        vector<vector<int>> matrix(n, vector<int>(n, 0));
+        int  i = 0, d = n - 1, j = 0, r = n - 1, k = 1;
+        while (true) {
+            for (int col = j; col <= r; col++) matrix[i][col] = k++; // turn right
+            if (++i > d) break;
+            for (int row = i; row <= d; row++) matrix[row][r] = k++; // turn down
+            if (--r < j) break;
+            for (int col = r; col >= j; col--) matrix[d][col] = k++; //turn left
+            if (--d < i) break;
+            for (int row = d; row >= i; row--) matrix[row][j] = k++; //turn right
+            if (++j > r) break;
+        }
+        return matrix;
     }
 
 //60. Permutation Sequence
@@ -1617,6 +1715,42 @@ public:
         return vec;
     }
 
+//97. Interleaving String
+    bool isInterleave(string s1, string s2, string s3) {
+        if(s1.size() + s2.size() != s3.size()) return false;
+        bool dp[s1.size() + 1][s2.size() + 1]{};
+        for(int i = 0; i <= s1.size(); ++i){
+            for(int j = 0; j <= s2.size(); ++j){
+                if(i == 0 && j == 0) dp[i][j] = true;
+                else if(i == 0) dp[i][j] = dp[i][j - 1] && (s2[j - 1] == s3[j - 1]);
+                else if(j == 0) dp[i][j] = dp[i - 1][j] && (s1[i - 1] == s3[i - 1]);
+                else{
+                    dp[i][j] = (dp[i - 1][j] && (s1[i - 1] == s3[i + j - 1]))
+                            || (dp[i][j - 1] && (s2[j - 1] == s3[i + j - 1]));
+                }
+            }
+        }
+        return dp[s1.size()][s2.size()];
+    }
+
+//121. Best Time to Buy and Sell Stock
+    int maxProfit(vector<int>& prices) {
+
+    }
+
+//151. Reverse Words in a String
+    string reverseWords(string &s) {
+        std::reverse(s.begin(), s.end());
+        int beg = 0;
+        for(int i = 0; i < s.size(); ++i){
+            if(s[i] == ' ' && i > beg){
+                std::reverse(s.begin() + beg, s.begin() + i);
+                beg = i + 1;
+            }
+        }
+        return s;
+    }
+
 //204. Count Primes
 
 //231. Power of Two
@@ -1730,6 +1864,39 @@ public:
         }
         reverseString(s, beg, s.size());
         return s;
+    }
+
+//640. Solve the Equation
+    string solveEquation(string equation) {
+
+    }
+
+//672. Bulb Switcher II
+    int flipLights(int n, int m) {
+        if(!m || !n) return 0;
+        if(n == 1) return 2;
+        if(m == 1) return n == 2 ? 3 : 4;
+        if(n == 2) return 4;
+        return  m == 2 ? 7 : 8;
+    }
+
+//728. Self Dividing Numbers
+    bool selfDividingNumber(int num){
+        int copyNum = num;
+        while(num){
+            int bit = num % 10;
+            num /= 10;
+            if(bit && (copyNum % bit) || !bit) return false;
+        }
+        return true;
+    }
+
+    vector<int> selfDividingNumbers(int left, int right) {
+        vector<int> vec{};
+        for(int i = left; i <= right; ++i){
+            if(selfDividingNumber(i)) vec.push_back(i);
+        }
+        return vec;
     }
 
 };

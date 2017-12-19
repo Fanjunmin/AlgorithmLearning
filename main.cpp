@@ -4,10 +4,11 @@
 #include "Print.h"
 using namespace std;
 
+class Date;
+
 int main()
 {
     Function f;
     Contest g;
-    auto x = f.grayCode(3);
-    print(x, cout);
+    cout << f.totalNQueens(6);
 }

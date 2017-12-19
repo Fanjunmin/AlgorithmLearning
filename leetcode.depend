@@ -44,13 +44,13 @@
 	<set>
 	<numeric>
 
-1512390749 source:d:\workspace\leetcode\main.cpp
+1513688766 source:d:\workspace\leetcode\main.cpp
 	"Function.h"
 	"Contest.h"
 	"MathOperations.h"
 	"Print.h"
 
-1512390894 d:\workspace\leetcode\include\function.h
+1513688831 d:\workspace\leetcode\include\function.h
 	<vector>
 	<string>
 	<map>
@@ -65,7 +65,7 @@
 	<set>
 	"Print.h"
 
-1512275753 d:\workspace\leetcode\include\contest.h
+1512463728 d:\workspace\leetcode\include\contest.h
 	<vector>
 	<string>
 	<map>
@@ -74,7 +74,6 @@
 	<stack>
 	<set>
 	<numeric>
-	<Function.h>
 
 1511168695 source:d:\workspace\leetcode\src\mathoperations.cpp
 	"MathOperations.h"
@@ -85,7 +84,7 @@
 
 1512307814 d:\workspace\leetcode\include\interval.h
 
-1512389076 d:\workspace\leetcode\include\print.h
+1512565967 d:\workspace\leetcode\include\print.h
 	"Interval.h"
 	"ListNode.h"
 
