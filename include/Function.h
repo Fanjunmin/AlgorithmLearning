@@ -14,51 +14,14 @@
 #include <math.h>
 #include <set>
 #include "Print.h"
+#include "TreeNode.h"
+#include <unordered_map>
 using namespace std;
 
 class Function{
 public:
     vector<vector<int>> getZigzag(int l){
-        /*
         vector<vector<int>> vec(l, vector<int>(l, 0));
-        for(int k = 0; k < l; ++k){
-            for(int i = 0; i <= k; ++i){
-                int j = k - i;
-                vec[i][j] = (k * (k + 1) / 2) + (k % 2 ? i : j);
-            }
-        }
-        for(int k = 2 * l - 2; k >= l; --k){
-            for(int i = k - l + 1; i < l; ++i){
-                int j = k - i;
-                if(l % 2 == 0){
-                    vec[i][j] = l * l - 1 - (2*l-k-2)*(2*l-k-1)/2 - (k % 2 ? l - 1 - j : l - 1 - i);
-                }
-                else{
-                    vec[i][j] = l * l - 1 - (2*l-k-2)*(2*l-k-1)/2 - (k % 2 ? l - 1 - i : l - 1 - j);
-                }
-            }
-        }
-        */
-
-        vector<vector<int>> vec(l, vector<int>(l, 0));
-        /*
-        for(int k = 0; k < l; ++k){
-            for(int i = 0; i <= k; ++i){
-                int j = k - i;
-                int diagonalSum = k * (k + 1) / 2;
-                vec[i][j] = diagonalSum + (k % 2 ? i : j);
-            }
-        }
-        int allSum = l * l - 1;
-        for(int k = 2 * l - 2; k >= l; --k){
-            for(int i = k - l + 1; i < l; ++i){
-                int j = k - i;
-                int diagonalSum =(2 * l - k - 2) * (2 * l - k - 1 ) / 2;
-                int s = allSum - diagonalSum - (l - 1);
-                vec[i][j] = s + ((l ^ k) % 2 ? i : j);
-            }
-        }
-        */
         for(int i = 0; i < l; ++i){
             for(int j = 0; j < l; ++j){
                 int k = i + j;
@@ -1715,22 +1678,116 @@ public:
         return vec;
     }
 
+//94. Binary Tree Inorder Traversal
+    void goLeft(TreeNode* root, stack<TreeNode*> &s){
+        //从某个节点从发，沿左分子一直深入，并记入栈
+        while(root){
+            s.push(root);
+            root = root->left;
+        }
+    }
+
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> vec{};
+        stack<TreeNode*> s;
+        while(true){
+            goLeft(root, s);
+            if(s.empty()) break;
+            root = s.top();
+            s.pop();
+            vec.push_back(root->val);
+            root = root->right;
+        }
+        return vec;
+    }
+
+//95. Unique Binary Search Trees II
+    vector<TreeNode*> generateTrees(int n) {
+
+    }
+
+//96. Unique Binary Search Trees
+    int numTrees(int n) {
+        //dynamic program
+        //G(n) means all BSTs, F(i,n) means BSTs with root i;
+        //G(n)=F(1,n)+F(2,n)+...+F(n,n) and F(i,n)=G(i-1)*G(n-i) with G(0)=G(1)=1
+        if(n < 2) return 1;
+        vector<int> G(n + 1, 0), F(n + 1, 0);
+        G[0] = G[1] = 1;
+        for(int i = 2; i <= n; ++i){
+            for(int j = 1; j <= i; ++j){
+                F[j] = G[j - 1] * G[i - j];
+                G[i] += F[j];
+            }
+        }
+        return G[n];
+    }
+
 //97. Interleaving String
     bool isInterleave(string s1, string s2, string s3) {
         if(s1.size() + s2.size() != s3.size()) return false;
         bool dp[s1.size() + 1][s2.size() + 1]{};
-        for(int i = 0; i <= s1.size(); ++i){
-            for(int j = 0; j <= s2.size(); ++j){
-                if(i == 0 && j == 0) dp[i][j] = true;
-                else if(i == 0) dp[i][j] = dp[i][j - 1] && (s2[j - 1] == s3[j - 1]);
-                else if(j == 0) dp[i][j] = dp[i - 1][j] && (s1[i - 1] == s3[i - 1]);
-                else{
-                    dp[i][j] = (dp[i - 1][j] && (s1[i - 1] == s3[i + j - 1]))
-                            || (dp[i][j - 1] && (s2[j - 1] == s3[i + j - 1]));
-                }
+    }
+//98. Validate Binary Search Tree
+    void ts(TreeNode* root, vector<int>& vec){
+        //中序遍历保存到vec
+        if(root){
+            ts(root->left, vec);
+            vec.push_back(root->val);
+            ts(root->right, vec);
+        }
+    }
+    bool isValidBST(TreeNode* root) {
+        //中序遍历是一个递增序列
+        if(root == NULL) return true;
+        vector<int> vec;
+        ts(root, vec);
+        for(int i = 1; i < vec.size(); ++i){
+            if(vec[i] <= vec[i - 1]) return false;
+        }
+        return true;
+    }
+
+//100. Same Tree
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if(p == NULL && q == NULL) return true;
+        else if(p && q) return p->val == q->val && isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+        else return false;
+    }
+//101. Symmetric Tree
+    bool isSymmetric(TreeNode* lChild, TreeNode* rChild) {
+        if(!lChild && !rChild) return true;
+        else if(lChild && !rChild || (!lChild && rChild)) return false;
+        else{
+            if(lChild->val != rChild->val) return false;
+            else{
+                return isSymmetric(lChild->left, rChild->right) && isSymmetric(rChild->left, lChild->right);
             }
         }
-        return dp[s1.size()][s2.size()];
+    }
+    bool isSymmetric(TreeNode* root) {
+        if(!root) return false;
+        return isSymmetric(root->left, root->right);
+    }
+//102. Binary Tree Level Order Traversal
+    void levelOrderPush(TreeNode* root, vector<vector<int>>& vvec, int index){
+        if(root){
+            vvec[index].push_back(root->val);
+            levelOrderPush(root->left, vvec, index + 1);
+            levelOrderPush(root->right, vvec, index + 1);
+        }
+    }
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        int len = maxDepth(root);
+        vector<vector<int>> vvec(len, vector<int>{});
+        levelOrderPush(root, vvec, 0);
+        return vvec;
+    }
+
+//104. Maximum Depth of Binary Tree
+    int maxDepth(TreeNode* root) {
+        if(root == NULL) return 0;
+        return 1 + max(maxDepth(root->left), maxDepth(root->right));
     }
 
 //121. Best Time to Buy and Sell Stock
@@ -1738,6 +1795,32 @@ public:
 
     }
 
+//136. Single Number
+    //with map
+    /*
+    int singleNumber(vector<int>& nums) {
+        map<int, int> myMap;
+        for(auto num : nums) myMap[num]++;
+        for(auto iter = myMap.begin(); iter != myMap.end(); ++iter){
+            if(iter->second != 2) return iter->first;
+        }
+    }*/
+    //use xor for any N:0^N=N,N^N=0;
+    int singleNumber(vector<int>& nums){
+        int result = 0;
+        for(auto num : nums) result ^= num;
+        return result;
+    }
+
+//137. Single Number II
+    int singleNumberII(vector<int>& nums) {
+        int a = 0, b = 0;
+        for(auto num : nums){
+            a = (a ^ num) & ~b;
+            b = (b ^ num) & ~a;
+        }
+        return a;
+    }
 //151. Reverse Words in a String
     string reverseWords(string &s) {
         std::reverse(s.begin(), s.end());
@@ -1751,12 +1834,36 @@ public:
         return s;
     }
 
-//204. Count Primes
+//191. Number of 1 Bits
+    int hammingWeight(uint32_t n) {
+        int count = 0;
+        while(n){
+            count++;
+            n = n & (n - 1);
+        }
+        return count;
+    }
 
 //231. Power of Two
     bool isPowerOfTwo(int n) {
         if(n <= 0) return false;
         return !(n & (n - 1));
+    }
+
+//233. Number of Digit One
+    int countDigitOne(int n) {
+        if(n < 1) return 0;
+        int hi = n, lo, mi, count = 0, base = 1;
+        while(hi){
+            lo = n % base;
+            mi = hi % 10;
+            hi /= 10;
+            count += base * hi;
+            if(mi > 1) count += base;
+            else if(mi == 1) count += lo + 1;
+            base *= 10;
+        }
+        return count;
     }
 
 //371. Sum of Two Integers
@@ -1766,7 +1873,6 @@ public:
         int sum, carry;
         sum = a ^ b;        //没有进位的加法运算
         carry = (a & b) << 1;   //进位（左移）
-        std::cout << sum << std::ends << carry << endl;
         return getSum(sum, carry); //递归
     }
 
@@ -1832,6 +1938,17 @@ public:
         return vec;
     }
 
+//451. Sort Characters By Frequency
+    string frequencySort(string s) {
+        map<char, int> myMap;
+        for(auto c : s) myMap[c]++;
+        vector<pair<char, int>> vp(myMap.begin(), myMap.end());
+        sort(vp.begin(), vp.end(), [](pair<char, int> a, pair<char, int> b){return a.second > b.second;});
+        s = "";
+        for(auto c : vp) s += string(c.second, c.first);
+        return s;
+    }
+
 //541. Reverse String II
     string reverseStr(string s, int k) {
         if(s.size() < k){
@@ -1869,6 +1986,26 @@ public:
 //640. Solve the Equation
     string solveEquation(string equation) {
 
+    }
+
+//652. Find Duplicate Subtrees
+    string collectId(TreeNode* root, unordered_map<string, vector<TreeNode*> > &myMap){
+        if(!root) return "";
+        string id = "." + collectId(root->left, myMap) + to_string(root->val)
+            + collectId(root->right, myMap) + ".";
+        myMap[id].push_back(root);
+        return id;
+    }
+
+    vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+        vector<TreeNode*> sub{};
+        unordered_map<string, vector<TreeNode*> > myMap;
+        collectId(root, myMap);
+        for(auto iter = myMap.begin(); iter != myMap.end(); ++iter){
+            if((iter->second).size() > 1)
+                sub.push_back((iter->second)[0]);
+        }
+        return sub;
     }
 
 //672. Bulb Switcher II

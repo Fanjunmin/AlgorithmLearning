@@ -109,5 +109,123 @@ public:
         for(int i = 0; i < vec.size(); ++i) sum = sum * 10 + vec[i];
         return sum;
     }
+
+//contest 64
+    //747. Largest Number Greater Than Twice of Others
+    int dominantIndex(vector<int>& nums) {
+        if(nums.empty()) return -1;
+        int max1 = nums[0], max2 = -1, index;
+        for(int i = 1; i < nums.size(); ++i){
+            if(nums[i] >= max1){
+                max2 = max1;
+                max1 = nums[i];
+            }
+            else if(nums[i] >= max2){
+                max2 = nums[i];
+            }
+        }
+        for(int i = 0; i < nums.size(); ++i){
+            if(nums[i] == max1) index = i;
+        }
+        return max1 >= 2 * max2 ? index : -1;
+    }
+
+    //752. Open the Lock
+    int openLock(vector<string>& deadends, string target) {
+        string s = "0000";
+        if(find(deadends.begin(), deadends.end(), s) == deadends.end()) return -1;
+        map<string, int> myMap;
+        myMap[s] = 0;
+        for(auto x : deadends) myMap[x] = 0;
+
+
+    }
+
+//contest 70
+    //779. K-th Symbol in Grammar
+    int kthGrammar(int N, int K) {
+        if(K == 1) return 0;
+        int num = 0;
+        for(int i = N - 1; i > 0; --i){
+            if(K > pow(2, i)){
+                K -= pow(2, i);
+                ++num;
+            }
+            else if(K == pow(2, i)){
+                K -= pow(2, i - 1);
+                ++num;
+            }
+        }
+        return num % 2;
+    }
+    //776. Split BST
+    vector<TreeNode*> splitBST(TreeNode* root, int V) {
+
+    }
+    //778. Swim in Rising Water
+    int swimInWater(vector<vector<int>>& grid) {
+
+    }
+
+//contest 72
+    //784. Letter Case Permutation
+    void letterBacktracking(string S, int index, vector<string> &letter){
+        if(index == S.size()){
+            //cout << S << endl;
+            letter.push_back(S);
+            return;
+        }
+        else{
+            if(isdigit(S[index])) letterBacktracking(S, ++index, letter);
+            else{
+                int i = index + 1;
+                letterBacktracking(S, i, letter);
+                S[index] = islower(S[index]) ? toupper(S[index]) : tolower(S[index]);
+                letterBacktracking(S, i, letter);
+            }
+        }
+    }
+
+    vector<string> letterCasePermutation(string S) {
+        vector<string> letter;
+        letterBacktracking(S, 0, letter);
+        return letter;
+    }
+
+    //785. Is Graph Bipartite?
+    bool isBipartite(vector<vector<int>>& graph) {
+        int len = graph.size();
+        vector<int> color(len, -1);
+        for(int i = 0; i < len; ++i){
+            if(color[i] == -1) color[i] = 1;
+            for(int j = 0; j < graph[i].size(); ++j){
+                int k = graph[i][j];
+                if(color[k] == -1) color[k] = (color[i] == 1 ? 0 : 1);
+                else if(color[k] == color[i]) return false;
+            }
+        }
+        return true;
+    }
+
+    //786. K-th Smallest Prime Fraction
+    vector<int> kthSmallestPrimeFraction(vector<int>& A, int K) {
+
+    }
+
+    //787. Cheapest Flights Within K Stops
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) {
+        map<int, vector<pair<int, int>>> myMap;
+        vector<int> price(n, -1);
+        for(int i = 0; i < flights.size(); ++i){
+            myMap[flights[0]].push_back(make_pair(flights[i][1],flights[i][2]));
+        }
+        price[src] = 0;
+        for(auto x : myMap[src]){
+            for(auto t : x){
+                if(price(t.first) == -1)
+                    price(t.first) = t.second;
+            }
+        }
+    }
 };
 

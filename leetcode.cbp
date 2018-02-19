@@ -40,6 +40,8 @@
 		<Unit filename="include/ListNode.h" />
 		<Unit filename="include/MathOperations.h" />
 		<Unit filename="include/Print.h" />
+		<Unit filename="include/PtOffer.h" />
+		<Unit filename="include/TreeNode.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/MathOperations.cpp" />
 		<Extensions>
