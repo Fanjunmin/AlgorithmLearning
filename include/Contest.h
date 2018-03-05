@@ -214,18 +214,72 @@ public:
 
     //787. Cheapest Flights Within K Stops
     int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) {
-        map<int, vector<pair<int, int>>> myMap;
-        vector<int> price(n, -1);
-        for(int i = 0; i < flights.size(); ++i){
-            myMap[flights[0]].push_back(make_pair(flights[i][1],flights[i][2]));
+    }
+
+
+//Contest 74
+    //792. Number of Matching Subsequences
+    bool isSubseq(string S, string s){
+        int len = s.size();
+        int j = 0;
+        for(int i = 0; i < len; ++i){
+            while(j < S.size() && S[j] != s[i])
+                ++j;
+            if(j == S.size())
+                return false;
+            ++j;
         }
-        price[src] = 0;
-        for(auto x : myMap[src]){
-            for(auto t : x){
-                if(price(t.first) == -1)
-                    price(t.first) = t.second;
+        return true;
+    }
+    int numMatchingSubseq(string S, vector<string>& words) {
+        int count  = 0;
+        for(auto word : words)
+            count += isSubseq(S, word) ? 1 : 0;
+        return count;
+    }
+
+    //793. Preimage Size of Factorial Zeroes Function
+    int preimageSizeFZF(int K) {
+        vector<int > five;
+        while(K >= 5){
+            five.push_back(K % 5);
+            K /= 5;
+        }
+
+    }
+
+    //795. Number of Subarrays with Bounded Maximum
+    int numSubarrayBoundedMax(vector<int>& A, int L, int R) {
+        //A=[1,1,2,2,1,1,2] L = 2, R = 3;
+        vector<int> dp(A.size() + 1, 0);
+        int count = 0;
+        for(int i = 0; i < A.size(); ++i){
+            if(A[i] > R) dp[i + 1] = 0;
+            else if(A[i] >= L){
+                int j = i;
+                while(j >= 0 && A[j] <= R){
+                    dp[i + 1] += 1;
+                    --j;
+                }
+            }
+            else{
+                int j = i - 1;
+                bool appear = false;
+                while(j >= 0 && A[j] <= R){
+                    if(A[j] >= L){
+                        dp[i + 1] += 1;
+                        appear = true;
+                    }
+                    else{
+                        dp[i + 1] += appear ? 1 : 0;
+                    }
+                    --j;
+                }
             }
         }
+        for(int i = 0; i <= A.size(); ++i)
+            count += dp[i];
+        return count;
     }
 };
 

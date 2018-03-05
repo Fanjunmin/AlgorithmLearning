@@ -1938,6 +1938,14 @@ public:
         return vec;
     }
 
+//378. Kth Smallest Element in a Sorted Matrix
+    void kmerge(vector<int> &v1, vector<int> &v2){
+
+    }
+    int kthSmallest(vector<vector<int>>& matrix, int k) {
+
+    }
+
 //451. Sort Characters By Frequency
     string frequencySort(string s) {
         map<char, int> myMap;
@@ -1947,6 +1955,39 @@ public:
         s = "";
         for(auto c : vp) s += string(c.second, c.first);
         return s;
+    }
+
+//524. Longest Word in Dictionary through Deleting
+    typedef map<char, int> Cim;
+    bool fitWord(Cim &cim, string s2){
+        Cim cim2;
+        for(auto s : s2)
+            ++cim2[s];
+        for(auto iter = cim2.begin(); iter != cim2.end(); ++iter){
+            if(iter->second > cim[iter->first])
+                return false;
+        }
+        return true;
+    }
+    string findLongestWord(string s, vector<string>& d) {
+        vector<string> S;
+        Cim cim;
+        int len = 0;
+        for(auto i : s)
+            ++cim[i];
+        for(auto i : d){
+            if(fitWord(cim, i))
+                S.push_back(i);
+        }
+        for(auto i : S){
+            len = len < i.size() ? i.size() : len;
+        }
+        string T(len, 'z');
+        for(auto i : S){
+            if(i.size() == len)
+                T = T < i ? T : i;
+        }
+        return T;
     }
 
 //541. Reverse String II
@@ -1988,6 +2029,25 @@ public:
 
     }
 
+//647. Palindromic Substrings
+    int countSubstrings(string s) {
+        if(s.empty())
+            return 0;
+        int len = s.size(), count = 0;
+        for(int i = 0; i < len; ++i){
+            count += countSub(s, i, i);
+            count += countSub(s, i, i+1);
+        }
+        return count;
+    }
+    int countSub(string s, int lo, int hi){
+        int count = 0;
+        while(lo >= 0 && hi < s.size() && s[lo--] == s[hi++]){
+            ++count;
+        }
+        return count;
+    }
+
 //652. Find Duplicate Subtrees
     string collectId(TreeNode* root, unordered_map<string, vector<TreeNode*> > &myMap){
         if(!root) return "";
@@ -2015,6 +2075,11 @@ public:
         if(m == 1) return n == 2 ? 3 : 4;
         if(n == 2) return 4;
         return  m == 2 ? 7 : 8;
+    }
+
+//712. Minimum ASCII Delete Sum for Two Strings
+    int minimumDeleteSum(string s1, string s2) {
+
     }
 
 //728. Self Dividing Numbers
