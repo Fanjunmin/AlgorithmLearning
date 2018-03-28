@@ -1,6 +1,7 @@
 #ifndef PTOFFER_H
 #define PTOFFER_H
 #include "TreeNode.h"
+#include "ListNode.h"
 class PtOffer
 {
 public:
@@ -21,29 +22,42 @@ public:
     }
 
     //平衡二叉树
-    int balancedHeight(TreeNode* pRoot){
-        //若是平衡二叉树，返回其高度，否则返回-1
-        if(pRoot == NULL) return 0;
-        else{
-            if(pRoot->left == NULL && pRoot->right == NULL){
-                return 1;
-            }
-            else if(pRoot->left != NULL && pRoot->right == NULL){
-                return balancedHeight(pRoot->left) == 1 ? 2 : -1;
-            }
-            else if(pRoot->left == NULL && pRoot->right != NULL){
-                return balancedHeight(pRoot->right) == 1 ? 2 : -1;
-            }
-            else{
-                int a = balancedHeight(pRoot->right);
-                int b = balancedHeight(pRoot->left);
-                if(a != -1 && b != -1 && abs(a - b) <= 1) return max(a, b) + 1;
-                else return -1;
+    bool IsBalanced(TreeNode* pRoot, int& pDepth){
+        if(pRoot == NULL){
+            pDepth = 0;
+            return true;
+        }
+        int left, right;
+        if(IsBalanced(pRoot->left, left) && IsBalanced(pRoot->right, right)) {
+            int diff = left - right;
+            if(-1 <= diff && diff <= 1) {
+                pDepth = 1 + (left > right ? left : right);
+                return true;
             }
         }
+        return false;
     }
+
     bool IsBalanced_Solution(TreeNode* pRoot) {
-		return balancedHeight(pRoot) == -1 ? false : true;
+        int pDepth = 0;
+		return IsBalanced(pRoot, pDepth);
+    }
+
+    //对称的二叉树
+    bool isSymmetrical(TreeNode* lChild, TreeNode* rChild){
+        if (lChild == NULL && rChild == NULL) return true;
+        else if (lChild && rChild) {
+            if(lChild->val != rChild->val) return false;
+            else{
+                return isSymmetrical(lChild->left, rChild->right) && isSymmetrical(lChild->right, rChild->left);
+            }
+        }
+        else return false;
+    }
+
+    bool isSymmetrical(TreeNode* pRoot){
+        if(pRoot == NULL) return true;
+        return isSymmetrical(pRoot->left, pRoot->right);
     }
 
     //把二叉树打印成多行
@@ -61,26 +75,6 @@ public:
         int index = 0;
         recursion(pRoot, vec, index);
         return vec;
-    }
-
-    //对称的二叉树
-    void Traversal(TreeNode* pRoot, vector<int> &vec, int order){
-        if(pRoot == NULL) return;
-        vec.push_back(pRoot->val);
-        if(order){
-        	Traversal(pRoot->left, vec, order);
-        	Traversal(pRoot->right, vec, order);
-        }
-        else{
-            Traversal(pRoot->right, vec, order);
-        	Traversal(pRoot->left, vec, order);
-        }
-    }
-    bool isSymmetrical(TreeNode* pRoot){
-		vector<int> vec0, vec1;
-        Traversal(pRoot, vec0, 0);
-        Traversal(pRoot, vec1, 1);
-        return vec0 == vec1;
     }
 
     //二维数组中的查找
@@ -171,8 +165,73 @@ public:
         for(auto number : numbers)
             ++m[number];
         auto iter = max_element(m.begin(), m.end(),[](intIntPair a, intIntPair b){return a.second < b.second;});
-        //int len = numbers.size() % 2 ?  numbers.size() / 2 + 1 : numbers.size() / 2;
         return iter->second > numbers.size() / 2 ? iter->first : 0;
+    }
+
+    //替换空格
+    void replaceSpace(char *str,int length) {
+        if(str == NULL) return;
+        int spaceCount = 0;
+        for(int i = 0; *(str+i) != '\0'; ++i){
+            if(*(str+i) == ' ')
+                ++spaceCount;
+        }
+        int index = length - 1;
+        for(int j = length - 1; j >= 0; --j){
+            if(*(str+j) == ' '){
+                for(int k = index; k > j; --k){
+                    *(str+k+2*length) = *(str+k);   //后移2*length位
+                }
+                *(str+j+2*length-2) = '%';
+                *(str+j+2*length-1) = '2';
+                *(str+j+2*length) = '0';    //将' '代替为'%20'
+                --length;
+                index = j - 1;
+            }
+            cout << str << endl;
+        }
+	}
+
+	//从尾到头打印链表
+	void print(ListNode* head, vector<int> &vec){
+        if(head == NULL)
+            return;
+        print(head->next, vec);
+        vec.push_back(head->val);
+	}
+    vector<int> printListFromTailToHead(ListNode* head) {
+        vector<int> vec;
+        print(head, vec);
+        return vec;
+    }
+
+    //反转链表
+    ListNode* ReverseList(ListNode* pHead) {
+        //递归版；
+        if(pHead == NULL || pHead->next == NULL)
+            return pHead;
+        ListNode *pReverseNode = ReverseList(pHead->next);
+        pHead->next->next = pHead;
+        pHead->next = NULL;
+        return pReverseNode;
+    }
+    ListNode* ReverseList2(ListNode* pHead) {
+        //非递归版
+        if(pHead == NULL || pHead->next == NULL)
+            return pHead;
+        ListNode* pNode=pHead;//当前指针
+        ListNode* pReverseHead=NULL;//新链表的头指针
+        ListNode* pPrev=NULL;//当前指针的前一个结点
+
+        while(pNode!=NULL){//当前结点不为空时才执行
+            ListNode* pNext=pNode->next;//链断开之前一定要保存断开位置后边的结点
+            if(pNext==NULL)//当pNext为空时，说明当前结点为尾节点
+                pReverseHead=pNode;
+            pNode->next=pPrev;//指针反转
+            pPrev=pNode;
+            pNode=pNext;
+        }
+        return pReverseHead;
     }
 
 };

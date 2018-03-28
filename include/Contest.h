@@ -2,7 +2,7 @@
 #include <string>
 #include <map>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <stack>
 #include <set>
 #include <numeric>
@@ -280,6 +280,134 @@ public:
         for(int i = 0; i <= A.size(); ++i)
             count += dp[i];
         return count;
+    }
+
+//Contest 76
+    //800. Similar RGB Color
+    string minRGB(char str1, char str2) {
+        int value = str1 <= '9' ? (str2 <= '9' ? (str1 - '0') * 16 + str2 - '0' : (str1 - '0') * 16 + str2 - 'a' + 10)
+                    :  (str2 <= '9' ? (str1 - 'a' + 10) * 16 + str2 - '0' : (str1 - 'a' + 10) * 16 + str2 - 'a' + 10);
+        int m = INT_MAX, index = 0;
+        for(int i = 0; i < 16; ++i){
+            int abs = value <= i * 16 + i ? i * 16 + i - value : value - i * 16 - i;
+            if(abs <= m){
+                m = abs;
+                index = i;
+            }
+        }
+        return string(2, index <= 9 ? index + '0' : index - 10 + 'a');
+    }
+    string similarRGB(string color) {
+        string re = "#";
+        re += minRGB(color[1], color[2]);
+        re += minRGB(color[3], color[4]);
+        re += minRGB(color[5], color[6]);
+        return re;
+    }
+
+    //801. Minimum Swaps To Make Sequences Increasing
+    int minSwap(vector<int>& A, vector<int>& B) {
+        if(A.size() <= 1)
+            return 0;
+        int swaplen = 0;
+        for(int i = 1; i < A.size(); ++i){
+            if(A[i] <= A[i-1] || B[i] <= B[i-1]){
+                ++swaplen;
+                swap(A[i], B[i]);
+            }
+            else{
+                if(i+1 < A.size() && A[i+1] <= A[i-1] || B[i+1] <= B[i]){
+
+                }
+            }
+        }
+        return swaplen;
+    }
+    //802. Find Eventual Safe States
+    bool dfs(int node, int index, vector<vector<int>>& graph) {
+        if(graph[index].empty())
+            return false;
+        for(auto x : graph[index]){
+            if(x == node){
+                return true;
+            }
+            else{
+                dfs(node, x, graph);
+            }
+        }
+        return false;
+    }
+    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
+        vector<int> vec;
+        int len = graph.size();
+        for(int i = 0; i < len; ++i){
+            if(!dfs(i, i, graph))
+                vec.push_back(i);
+        }
+        return vec;
+    }
+
+//Contest 77
+    //806. Number of Lines To Write String
+    vector<int> numberOfLines(vector<int>& widths, string S) {
+        int lines = 0, lastLine = 0, unitPlus = 0;
+        for(auto s : S){
+            unitPlus += widths[s - 'a'];
+            if(unitPlus > 100) {
+                ++lines;
+                unitPlus = widths[s - 'a'];
+            }
+            else if(unitPlus == 100) {
+                ++lines;
+                unitPlus = 0;
+            }
+        }
+        lines += (unitPlus == 100 ? 0 : 1);
+        return  {lines, unitPlus};
+    }
+
+    //804. Unique Morse Code Words
+    int uniqueMorseRepresentations(vector<string>& words) {
+        vector<string> sv{".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.",
+                        "---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.."};
+        set<string> ss{};
+        for(auto s : words) {
+            string temp = "";
+            for(auto ch : s) temp += sv[ch - 'a'];
+            ss.insert(temp);
+        }
+        return ss.size();
+    }
+
+    //807. Max Increase to Keep City Skyline
+    int maxIncreaseKeepingSkyline(vector<vector<int>>& grid) {
+
+    }
+
+    //805. Split Array With Same Average
+    double average(const vector<int>& A) {
+        if(A.size() == 0) return 0;
+        double sum = 0;
+        for(auto a : A) sum += a;
+        return sum / A.size();
+    }
+    bool sASA(const vector<int>& A, vector<int> vec, int ave, int index) {
+        if(average(vec) == ave)
+            return true;
+        if(index == A.size())
+            return false;
+        for(int i = 0; i < A.size(); ++i) {
+            vec.push_back(a);
+            sASA(A, vec, ave, i + 1);
+            vec.pop_back();
+        }
+    }
+    bool splitArraySameAverage(vector<int>& A) {
+        int sum = 0, ave = average(A), index = 0;
+        for(auto a : A) sum += a;
+        if(sum % 2 == 1) return false;
+        vector<int> vec{};
+        return sASA(A, vec, ave, index);
     }
 };
 

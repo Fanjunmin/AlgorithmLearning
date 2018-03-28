@@ -815,36 +815,41 @@ public:
     }
 
 //39. Combination Sum
-    void combinSum(int index, vector<vector<int>> &ivv, vector<int> iv, int target, vector<int>& candidates){
-        if(target < 0 || index > candidates.size()) return;
-        if(0 == target) ivv.push_back(iv);
-        if(0 < target){
-            for(int i = index; i < candidates.size(); ++i){
-                iv.push_back(candidates[i]);
-                int S = target - candidates[i];
-                combinSum(i, ivv, iv, S, candidates);
-                iv.pop_back();
-            }
+    void combinSum(int index, vector<vector<int>> &ivv, vector<int> iv, int target, const vector<int>& candidates){
+        if(0 == target){
+            ivv.push_back(iv);
+            return;
+        }
+        for(int i = index; i < candidates.size(); ++i){
+            int S = target - candidates[i];
+            if(S < 0) break;
+            iv.push_back(candidates[i]);
+            combinSum(i, ivv, iv, S, candidates);
+            iv.pop_back();
         }
     }
 
     vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
         vector<vector<int>> ivv{};
         vector<int> iv{};
+        sort(candidates.begin(), candidates.end());
         combinSum(0, ivv, iv, target, candidates);
         return ivv;
     }
 
 //40. Combination Sum II
-    void combinSum2(int index, vector<vector<int>> &ivv, vector<int> iv, int target, vector<int>& candidates){
-        if(target < 0 || index > candidates.size()) return;
-        if(0 == target) ivv.push_back(iv);
-        if(0 < target){
-            for(int i = index; i < candidates.size(); ++i){
+    void combinSum2(int index, vector<vector<int>> &ivv, vector<int> iv, int target, const vector<int>& candidates){
+        if(0 == target){
+            ivv.push_back(iv);
+            return;
+        }
+        for(int i = index; i < candidates.size(); ++i){
+            int S = target - candidates[i];
+            if(S < 0) break;
+            if(i == index || candidates[i] != candidates[i - 1]){
                 iv.push_back(candidates[i]);
-                int S = target - candidates[i];
-                combinSum(i + 1, ivv, iv, S, candidates);
-                if(S < 0) iv.pop_back();
+                combinSum2(i + 1, ivv, iv, S, candidates);
+                iv.pop_back();
             }
         }
     }
@@ -852,6 +857,7 @@ public:
     vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
         vector<vector<int>> ivv{};
         vector<int> iv{};
+        sort(candidates.begin(), candidates.end());
         combinSum2(0, ivv, iv, target, candidates);
         return ivv;
     }
@@ -1822,7 +1828,7 @@ public:
         return a;
     }
 //151. Reverse Words in a String
-    string reverseWords(string &s) {
+    void reverseWords2(string &s) {
         std::reverse(s.begin(), s.end());
         int beg = 0;
         for(int i = 0; i < s.size(); ++i){
@@ -1831,7 +1837,7 @@ public:
                 beg = i + 1;
             }
         }
-        return s;
+        std::reverse(s.begin() + beg, s.end());
     }
 
 //191. Number of 1 Bits

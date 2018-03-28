@@ -1,7 +1,8 @@
 #ifndef MYSTRINGFUNC_H
 #define MYSTRINGFUNC_H
 
-
+#include <assert.h>
+#include <cstddef>
 class MyStringFunc
 {
 public:
@@ -18,15 +19,13 @@ public:
         //dest: 指向要写入的字符数组的指针
         //src: 指向复制来源的空终止字节字符串的指针
         //若dest数组不够大则行为未定义;若字符串重叠则行为未定义。
-        if(dest == NULL || src == NULL)
-            return NULL;
+        assert(dest != NULL && src != NULL);
         char *temp = dest;
         while((*dest++ = *src++) != '\0');
         return temp;
     }
     char* myStrncpy(char* dest, const char* src, std::size_t count){
-        if(dest == NULL || src == NULL)
-            return NULL;
+        assert(dest != NULL && src != NULL);
         char *temp = dest;
         int offset = 0;
         if(myStrlen(src) < count){
@@ -45,8 +44,7 @@ public:
         //dest 指向要后附到的空终止字节字符串的指针
         //src 指向作为复制来源的空终止字节字符串的指针
         //若字符串重叠则行为未定义。
-        if(dest == NULL || src == NULL)
-            return NULL;
+        assert(dest != NULL && src != NULL);
         char* temp = dest;
         while(*dest)
             ++dest;
@@ -54,8 +52,7 @@ public:
         return temp;
     }
     char *myStrncat( char *dest, const char *src, std::size_t count ){
-        if(dest == NULL || src == NULL)
-            return NULL;
+        assert(dest != NULL && src != NULL);
         char* temp = dest;
         while(*dest)
             ++dest;
@@ -75,6 +72,54 @@ public:
         }
         return *lhs - *rhs;
     }
+
+    //将dest前面count个字符置为字符c.返回dest的值.
+    void *myMemset(void *dest, int c, size_t count) {
+        assert(dest != NULL);
+        void *s = dest;
+        while (count--) {
+           *(char *)s = (char) c;
+           s = (char *)s + 1;
+        }
+        return dest;
+    }
+
+    //从src复制count字节的字符到dest. 与memmove功能一样, 只是不能处理src和dest出现重叠.返回dest的值
+    void *myMemcpy(void *dest, const void *src, size_t count) {
+        assert(dest != NULL && src != NULL);
+        void *s = dest;
+        while (count--) {
+            *(char *)s = *(char *)src;
+            s = (char *)s + 1;
+            src = (const char *)src + 1;
+        }
+        return dest;
+    }
+
+    //从src复制count字节的字符到dest. 如果src和dest出现重叠, 函数会自动处理.返回dest的值.
+    void *myMemmove(void *dest, const void *src, size_t count) {
+        assert(dest != NULL && src != NULL);
+        void *s = dest;
+        if (s <= src || (char *)s >= (char *)src + count) {
+            while (count--) {
+                *(char *)s = *(char *)src;
+                s = (char *)s + 1;
+                src = (char *)src + 1;
+            }
+        }
+        else {
+            //内存出现重叠之后，从后往前copy;
+            s = (char *)s + count - 1;
+            src = (char *)src + count - 1;
+            while (count--) {
+                *(char *)s = *(char *)src;
+                s = (char *)s - 1;
+                src = (char *)src - 1;
+            }
+        }
+        return dest;
+    }
+
 };
 
 #endif // MYSTRINGFUNC_H
