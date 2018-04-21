@@ -1,58 +1,28 @@
-# Some codes of algorithm
-## There are some head files including:
-- Include/TreeNode.h: the head file of the tree node.
-- Include/ListNode.h: the head file of the list node.
-- Include/Interval.h: the head file of the Interval.
+# 记录学习算法历程
+## 1. leetcode/   
+[leetcode](https://leetcode.com/problemset/all/)中的一些算法题解：Contest.h , Function.h.
 
-These are all for algorithm problems in [leetcode](https://leetcode.com/problemset/all/).
+## 2. PtOffer/  
+剑指Offer:名企面试官精讲典型编程题[Nowcoder](https://www.nowcoder.com/ta/coding-interviews)
 
-## Another two head files:
-- Include/Function.h: the head file of problems solutions. At the begining of every function, there is a annotation for the problem's No. and title. For example:
-```
-//1. Two Sum
-    vector<int> twoSum(vector<int>& nums, int target) {
-        map<int, int> myMap;
-        //key:the value of vector;value:the index of vector
-        for(int i = 0; i != nums.size(); ++i){
-            auto iter = myMap.find(target - nums[i]);
-            if(iter == myMap.end()){
-                //add the element which was not found in myMap;
-                myMap[nums[i]] = i;
-            }
-            else{
-                //return the two right element;
-                return {iter->second, i};
-            }
-        }
-    }
-```
-- Include/Contest.h: the head file of contest problems solutions, these sloutions may repeat the Function.h's solutions. At the begining, there is Contest's NO. then there is a annotation for the problem's number and title. For example:
-```
-//contest 61
-    //739. Daily Temperatures
-    vector<int> dailyTemperatures(vector<int>& temperatures) {
-        if(temperatures.empty()) return {};
-        if(temperatures.size() == 1) return {0};
-        for(int i = 0; i < temperatures.size(); ++i){
-            int j = i;
-            for(; j < temperatures.size(); ++j){
-                if(temperatures[j] > temperatures[i]){
-                    temperatures[i] = j - i;
-                    break;
-                }
-            }
-            if(j == temperatures.size()) temperatures[i] = 0;
-        }
-        return temperatures;
-    }
-    ...
+## 3. TypicalClasses/  
+/complex : 复数类  
+/Fraction ： 分数类  
+/String ： 字符串类  
+/share_ptr : 智能指针类。
+
+## 4. otherAlgo/  
+/mathOperator ：数学运算符类  
+    addition(+), substrction(-), absValue(||), oppValue(-), multiplication(*) and division(/).  
+
+/md_5 : md_5算法  
     
-```
-## The rest head files
-- Include/MathOperations.h: head file of math operations function definitions without math operations including: addition(+), substrction(-), absValue(||), oppValue(-), multiplication(*) and division(/).
-
-- Include/MySort.h: head file of some sort functions, including: BubbleSort, SelectionSort, InsertionSort, ShellSort, MergeSort, QuickSort and HeapSort.
-
-- Include/PtOffer.h: head file of solutions of problems in book named "剑指Offer:名企面试官精讲典型编程题" in [Nowcoder](https://www.nowcoder.com/ta/coding-interviews).
-
-- Include/Print.h: head file of "print" functions. 
+/MySort ：排序算法  
+    BubbleSort, SelectionSort, InsertionSort, ShellSort, MergeSort, QuickSort and HeapSort.  
+    
+/stringMatch：字符串匹配算法  
+    brute_forces,KMP,BM,Karp-Rabin  
+    
+/stringFunction: 常见c字符算法  
+strlen, strcpy, strncpy, strcat, strncat, strcmp, memset, memcpy, memmove.
+    

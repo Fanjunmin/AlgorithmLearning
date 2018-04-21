@@ -1,13 +1,9 @@
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
-#include <cmath>
-#include <stack>
-#include <set>
-#include <numeric>
+#ifndef CONTEST_H
+#define CONTEST_H
+#include <bits/stdc++.h>
 
 using namespace std;
+
 class Contest
 {
 public:
@@ -385,6 +381,7 @@ public:
     }
 
     //805. Split Array With Same Average
+    /*
     double average(const vector<int>& A) {
         if(A.size() == 0) return 0;
         double sum = 0;
@@ -397,7 +394,6 @@ public:
         if(index == A.size())
             return false;
         for(int i = 0; i < A.size(); ++i) {
-            vec.push_back(a);
             sASA(A, vec, ave, i + 1);
             vec.pop_back();
         }
@@ -409,5 +405,11 @@ public:
         vector<int> vec{};
         return sASA(A, vec, ave, index);
     }
-};
+    */
+//Contest 78
+    //811. Subdomain Visit Count
+    vector<string> subdomainVisits(vector<string>& cpdomains) {
 
+    }
+};
+#endif // CONTEST_H

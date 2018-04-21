@@ -1,6 +1,6 @@
 #ifndef MYSORT_H
 #define MYSORT_H
-
+#include <bits/stdc++.h>
 
 class MySort
 {
@@ -15,7 +15,7 @@ public:
         for(int i = 0; i < n-1; ++i){
             for(int j = 0; j < n-i-1; ++j){
                 if(A[j] > A[j+1])   //>= 则冒泡排序不稳定
-                    swap(A[j], A[j+1]);
+                    std::swap(A[j], A[j+1]);
             }
         }
     }
@@ -33,7 +33,7 @@ public:
                 if(A[j] < A[minIndex])
                     minIndex = j;
             }
-            swap(A[i], A[minIndex]);    //这一步会导致不稳定，eg:5,8,5,2,9
+            std::swap(A[i], A[minIndex]);    //这一步会导致不稳定，eg:5,8,5,2,9
         }
     }
 
@@ -133,9 +133,9 @@ public:
         int tail = lo - 1;  //tail为小于基准的子数组的最后一个元素索引
         for(int i = lo; i < hi; ++i){
             if(A[i] <= pivot)
-                swap(A[++tail], A[i]);  //将小于基准的元素放到子数组末尾
+                std::swap(A[++tail], A[i]);  //将小于基准的元素放到子数组末尾
         }
-        swap(A[tail + 1], A[hi]);   //将基准放置在子数组末尾
+        std::swap(A[tail + 1], A[hi]);   //将基准放置在子数组末尾
         return tail + 1;    //返回基准的索引
     }
 
@@ -148,7 +148,7 @@ public:
     void HeapSort(int A[], int n){
         int heap_size = BuildHeap(A, n);
         while(heap_size > 1){
-            swap(A[0], A[--heap_size]); //最后一个元素和当前最大的堆顶元素互换，并将堆的规模减1
+            std::swap(A[0], A[--heap_size]); //最后一个元素和当前最大的堆顶元素互换，并将堆的规模减1
             Heapify(A, 0, heap_size);
         }
     }
@@ -162,7 +162,7 @@ public:
         if(right_child < size && A[right_child] > A[max])
             max = right_child;
         if(max != i){
-            swap(A[i], A[max]);
+            std::swap(A[i], A[max]);
             Heapify(A, max, size);
         }
     }

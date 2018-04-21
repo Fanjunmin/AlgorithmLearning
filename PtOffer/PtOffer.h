@@ -1,7 +1,9 @@
 #ifndef PTOFFER_H
 #define PTOFFER_H
+#include <bits/stdc++.h>
 #include "TreeNode.h"
 #include "ListNode.h"
+using namespace std;
 class PtOffer
 {
 public:
@@ -234,6 +236,37 @@ public:
         return pReverseHead;
     }
 
+    //最小的k个数
+    void heapify(vector<int> A, int i, int n) {
+        int leftChild = 2 * i + 1;
+        int rightChild = 2 * i + 2;
+        int max = i;
+        if(leftChild < n && A[leftChild] < A[max])
+            max = leftChild;
+        if(rightChild < n && A[rightChild] < A[max])
+            max = rightChild;
+        if(max != i) {
+            swap(A[i], A[max]);
+            heapify(A, max, n);
+        }
+    }
+
+    int buildHeap(vector<int> A) {
+        int len = A.size();
+        for(int i = len / 2 - 1; i >= 0; --i) {
+            heapify(A, i, len);
+        }
+        return len;
+    }
+    vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+        int len = buildHeap(input);
+        while(k--) {
+            swap(input[0], input[--len]);
+            heapify(input, 0, len);
+        }
+        vector<int> re(input.rbegin(), input.rbegin()+k);
+        return re;
+    }
 };
 
 #endif // PTOFFER_H

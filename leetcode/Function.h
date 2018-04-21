@@ -1,21 +1,10 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
-#include <math.h>
-#include <stack>
-#include <set>
-#include <utility>
-#include <iostream>
-#include <typeinfo>
-#include <math.h>
-#include <set>
-#include "Print.h"
+#include <bits/stdc++.h>
+#include "ListNode.h"
+#include "Interval.h"
 #include "TreeNode.h"
-#include <unordered_map>
 using namespace std;
 
 class Function{
@@ -242,7 +231,7 @@ public:
     }
 
 //10. Regular Expression Matching
-    bool isMatch(string s, string p) {
+    bool isMatch2(string s, string p) {
 
     }
 
@@ -951,6 +940,49 @@ public:
         }
         std::reverse(as.begin(), as.end());
         return as;
+    }
+
+//44. Wildcard Matching
+    bool isMatch(string s, string p) {
+        if(s == "")
+            return (p == "" || p == "*" ? true : false);
+        if(p == "") return false;
+        int str_len = s.size(), pat_len = p.size();
+        vector<vector<int> > dp(pat_len, vector<int>(str_len, 0));
+        if(p[0] == '?' || p[0] == s[0])  dp[0][0] = 1;
+        for(int j = 0; j < str_len; ++j) {
+            if(p[0] == '*') dp[0][j] = 1;
+        }
+        for(int i = 1; i < pat_len; ++i) {
+            if(p[i] == '*' && dp[i - 1][0] == 1)
+                dp[i][0] = 1;
+            else if(p[i] == s[0] || p[i] == '?') {
+                int j = i - 1;
+                while(j >= 0 && dp[j][0] == 1 && p[j] == '*') {
+                    --j;
+                }
+                if(j < 0)   dp[i][0] = 1;
+            }
+
+        }
+        for(int i = 1; i < pat_len; ++i) {
+            for(int j = 1; j < str_len; ++j) {
+                if(p[i] == '*') {
+                    if(dp[i - 1][j - 1] == 1 || dp[i][j - 1] == 1 || dp[i - 1][j] == 1)
+                        dp[i][j] = 1;
+                }
+                else if(p[i] == '?' || p[i] == s[j]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+            }
+        }
+        for(int i = 0; i < pat_len; ++i) {
+            for(int j = 0; j < str_len; ++j) {
+                cout << dp[i][j] << ends;
+            }
+            cout <<endl;
+        }
+        return dp[pat_len - 1][str_len - 1]== 1 ? true : false;
     }
 
 //45. Jump Game II
@@ -2030,6 +2062,43 @@ public:
         return s;
     }
 
+//573. ¸´Êý³Ë·¨
+    pair<int, int> string_to_complex(string a) {
+        int re_a = 0, im_a = 0;
+        int sra = 1, sia = 1;
+        int plus_index = 10, start = 0;
+        if(a[0] == '-'){
+            sra = -1;
+            start = 1;
+        }
+        for(int i = start; i < a.size() - 1; ++i){
+            if(a[i] == '+')
+                plus_index = i;
+            else if(i < plus_index){
+                re_a = re_a * 10 + a[i] - '0';
+            }
+            else{
+                if(a[i] == '-')
+                    sia = -1;
+                else{
+                    im_a = 10 * im_a + a[i] - '0';
+                }
+            }
+        }
+        return pair<int, int>(sra * re_a, sia * im_a);
+    }
+
+
+    string complexNumberMultiply(string a, string b) {
+        pair<int, int> c_a = string_to_complex(a);
+        pair<int, int> c_b = string_to_complex(b);
+        int re = c_a.first * c_b.first - c_a.second * c_b.second;
+        int im = c_a.first * c_b.second + c_a.second * c_b.first;
+        cout << re << im << endl;
+        string s = to_string(re);
+        s += '+'; s += to_string(im); s += 'i';
+        return s;
+    }
 //640. Solve the Equation
     string solveEquation(string equation) {
 
