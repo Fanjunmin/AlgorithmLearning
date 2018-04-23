@@ -1,7 +1,7 @@
 #ifndef CONTEST_H
 #define CONTEST_H
 #include <bits/stdc++.h>
-
+#include <cmath>
 using namespace std;
 
 class Contest
@@ -410,6 +410,78 @@ public:
     //811. Subdomain Visit Count
     vector<string> subdomainVisits(vector<string>& cpdomains) {
 
+    }
+
+//Contest 81
+    //821. Shortest Distance to a Character
+    vector<int> shortestToChar(string S, char C) {
+        vector<int> vec(S.size());
+        vector<int> index(10000, -1);
+        int j = 0, len = 0;
+        for(int i = 0; i < S.size(); ++i) {
+            if(S[i] == C) {
+                index[j++] = i;
+            }
+        }
+        for(int i = 0; i < 10000; ++i) {
+            if(index[i] == -1) {
+                len = i;
+                break;
+            }
+        }
+        for(int i = 0; i < S.size(); ++i) {
+            if(S[i] == C)   vec[i] = 0;
+            else {
+                int dis = 10000;
+                for(int j = 0; j < len; ++j) {
+                    dis = min(dis, index[j] > i ? index[j] - i : i - index[j]);
+                }
+                vec[i] = dis;
+            }
+        }
+        return vec;
+    }
+    //822. Card Flipping Game
+    int flipgame(vector<int>& fronts, vector<int>& backs) {
+        int result = INT_MAX;
+        map<int, int> numCount;
+        for(int i = 0; i < fronts.size(); ++i) {
+            ++numCount[fronts[i]];
+            ++numCount[backs[i]];
+        }
+        for(int i = 0; i < fronts.size(); ++i) {
+            if(fronts[i] == backs[i]) {
+                numCount[fronts[i]] = -1;
+            }
+        }
+        for(auto iter = numCount.begin(); iter != numCount.end(); ++iter) {
+            if(iter->second != -1)
+                result = min(iter->first, result);
+        }
+        return result == INT_MAX ? 0 : result;
+    }
+
+    //823. Binary Trees With Factors
+    int numFactoredBinaryTrees(vector<int>& A) {
+        const long mod = 1000000007;
+        sort(A.begin(), A.end());
+        vector<long> dp(A.size(), 1);
+        long sum = 1;
+        map<int, int> numCount;
+        ++numCount[A[0]];
+        for(int i = 1; i < A.size(); ++i) {
+            for(int j = 0; j < i; ++j) {
+                if(A[i] % A[j] == 0 && numCount[A[i] / A[j]] == 1) {
+                    int k = find(A.begin(), A.end(), A[i] / A[j]) - A.begin();
+                    dp[i] += dp[j] * dp[k];
+                    dp[i] %= mod;
+                }
+            }
+            ++numCount[A[i]];
+            sum += dp[i];
+            sum %= mod;
+        }
+        return sum;
     }
 };
 #endif // CONTEST_H
