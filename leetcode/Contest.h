@@ -483,5 +483,51 @@ public:
         }
         return sum;
     }
+
+//Contest 82
+    //824. Goat Latin
+    string stringGLchange(string S, int lo, int hi, int c) {
+        //S[lo, hi]
+        vector<char> vec{'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'};
+        for(int i = 0; i < 10; ++i) {
+            if(S[lo] == vec[i]) {
+                return S.substr(lo, hi - lo + 1) + "ma" + string(c, 'a');
+            }
+        }
+        swap(S[lo], S[hi]);
+        return S.substr(lo, hi - lo + 1) + "ma" + string(c, 'a');
+    }
+    string toGoatLatin(string S) {
+        int beg = 0, c = 0;
+        string s = "";
+        for(int i = 0; i < S.size(); ++i) {
+            if(S[i] == ' ') {
+                //cout << (stringGLchange(S, beg, i - 1, c + 1) + ' ') << endl;
+                s += stringGLchange(S, beg, i - 1, ++c) + ' ';
+                beg = i + 1;
+            }
+        }
+        s += stringGLchange(S, beg, s.size() - 1, ++c);
+        return s;
+    }
+
+    //826. Most Profit Assigning Work
+    int maxProfitAssignment(vector<int>& difficulty, vector<int>& profit, vector<int>& worker) {
+        map<int, int> work;
+        for(int i = 0; i < worker.size(); ++i) ++work[worker[i]];
+        for(auto ite = work.begin(); ite != work.end(); ++ite) {
+            int m = INT_MIN;
+            for(int i = 0; i < profit.size(); ++i) {
+                if(ite->first >= difficulty[i])
+                    m = max(m, (profit[i] * ite->second));
+            }
+            ite->second = (m == INT_MIN ? 0 : m);
+        }
+        int sum = 0;
+        for(auto ite = work.begin(); ite != work.end(); ++ite) {
+            sum += ite->second;
+        }
+        return sum;
+    }
 };
 #endif // CONTEST_H

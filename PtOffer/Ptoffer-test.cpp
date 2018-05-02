@@ -5,6 +5,16 @@ using namespace std;
 int main()
 {
     PtOffer pt;
-    vector<int> vec = {4,5,1,6,2,7,3,8};
+//替换空格
+    /*
+    char *str = "p d d";
+    pt.replaceSpace(str, 9);*/
+
+//第一个只出现一次的字符
+    /*
+    string S = "dadasffwrgwsaavqlpos";
+    cout << pt.FirstNotRepeatingChar(S);*/
+
+
     return 0;
 }

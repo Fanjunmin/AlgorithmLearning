@@ -1000,77 +1000,42 @@ public:
     }
 
 //46. Permutations
-    void getpermute(vector<vector<int>> &ivv, vector<int> &nums, vector<int> iv, int beg){
-        if(iv.size() == nums.size()){
-            ivv.push_back(iv);
+    void getpermute(vector<vector<int>> &ivv, vector<int> &nums, int beg){
+        if(beg == nums.size()){
+            ivv.push_back(nums);
             return;
         }
         for(int i = beg; i < nums.size(); ++i){
-            iv.push_back(nums[i]);
             swap(nums[i], nums[beg]);
-            getpermute(ivv, nums, iv, beg + 1);
+            getpermute(ivv, nums, beg + 1);
             //reset
-            iv.pop_back();
             swap(nums[i], nums[beg]);
         }
     }
 
     vector<vector<int>> permute(vector<int>& nums) {
         vector<vector<int>> ivv{};
-        vector<int> iv{};
-        int beg = 0;
-        getpermute(ivv, nums, iv, beg);
+        getpermute(ivv, nums, 0);
         return ivv;
     }
 
 //47. Permutations II
-    /*use set and PermutationsI
-    void getPermuteUnique(set<vector<int>> &isv, vector<int> &nums, vector<int> iv, int beg){
-        if(iv.size() == nums.size()){
-            isv.insert(iv);
+    void getPermuteUnique(set<vector<int>> &isv, vector<int> &nums, int beg){
+        if(beg == nums.size()){
+            isv.insert(nums);
             return;
         }
         for(int i = beg; i < nums.size(); ++i){
-            iv.push_back(nums[i]);
             swap(nums[i], nums[beg]);
-            getPermuteUnique(isv, nums, iv, beg + 1);
-            //reset
-            iv.pop_back();
-            swap(nums[i], nums[beg]);
-        }
-    }
-    vector<vector<int>> permuteUnique(vector<int>& nums) {
-        //sort(nums.begin(), nums.end());
-        set<vector<int>> isv{};
-        vector<int> iv{};
-        int beg = 0;
-        getPermuteUnique(isv, nums, iv, beg);
-        vector<vector<int>> ivv{};
-        for(auto x : isv) ivv.push_back(x);
-        return ivv;
-    }
-    */
-
-    void getPermuteUnique(vector<vector<int>> &ivv, vector<int> &nums, vector<int> iv, int beg){
-        if(iv.size() == nums.size()){
-            ivv.push_back(iv);
-            return;
-        }
-        for(int i = beg; i < nums.size(); ++i){
-            if(i != beg && nums[i] == nums[beg]) continue;
-            iv.push_back(nums[i]);
-            swap(nums[i], nums[beg]);
-            getPermuteUnique(ivv, nums, iv, beg + 1);
-            iv.pop_back();
+            getPermuteUnique(isv, nums, beg + 1);
             swap(nums[i], nums[beg]);
         }
     }
 
     vector<vector<int>> permuteUnique(vector<int>& nums){
-        sort(nums.begin(), nums.end());
-        vector<vector<int>> ivv{};
-        vector<int> iv{};
-        getPermuteUnique(ivv, nums, iv, 0);
+        set<vector<int>> isv;
+        getPermuteUnique(isv, nums, 0);
+        vector<vector<int>> ivv(isv.begin(), isv.end());
         return ivv;
     }
 
@@ -1078,13 +1043,13 @@ public:
     void rotate(vector<vector<int>>& matrix) {
         int len = matrix.size();
         std::reverse(matrix.begin(), matrix.end());
-        //take the transpose of matrix
         for(int i = 0; i < len; ++i){
             for(int j = 0; j < i; ++j){
                 swap(matrix[i][j], matrix[j][i]);
             }
         }
     }
+
 
 //49. Group Anagrams
     //bool mapEqual(map<char, int> &map1, map<char, int> &map2);
@@ -1803,6 +1768,7 @@ public:
             }
         }
     }
+
     bool isSymmetric(TreeNode* root) {
         if(!root) return false;
         return isSymmetric(root->left, root->right);
@@ -1881,6 +1847,43 @@ public:
         }
         return count;
     }
+
+
+//217. Contains Duplicate
+    bool containsDuplicate(vector<int>& nums) {
+        map<int, int> myMap;
+        for(int i = 0; i < nums.size(); ++i) {
+            ++myMap[nums[i]];
+            if(myMap[nums[i]] == 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+//219. Contains Duplicate II
+    bool containsNearbyDuplicate(vector<int>& nums, int k) {
+        if(nums.empty()) return false;
+        map<int, int> myMap;
+        myMap[nums[0]] = 1;
+        for(int i = 1; i < nums.size(); ++i) {
+            if(myMap[nums[i]] >= 1 && i + 1 - myMap[nums[i]] <= k) {
+                return true;
+            }
+            else {
+                myMap[nums[i]] = i + 1;
+            }
+        }
+        return false;
+    }
+
+//220. Contains Duplicate III
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
+        if(nums.empty()) return false;
+        set<long> mySet;
+        return false;
+    }
+
 
 //231. Power of Two
     bool isPowerOfTwo(int n) {
