@@ -1682,8 +1682,22 @@ public:
     }
 
 //94. Binary Tree Inorder Traversal
+    //中序遍历递归版
+    void inorderTraversal2(TreeNode* root, vector<int>& result) {
+        if(root) {
+            inorderTraversal2(root->left, result);
+            result.push_back(root->val);
+            inorderTraversal2(root->right, result);
+        }
+    }
+    vector<int> inorderTraversal2(TreeNode* root) {
+        vector<int> result;
+        inorderTraversal2(root, result);
+        return result;
+    }
+    ////中序遍历迭代版
     void goLeft(TreeNode* root, stack<TreeNode*> &s){
-        //从某个节点从发，沿左分子一直深入，并记入栈
+    //从某个节点从发，沿左分子一直深入，并记入栈
         while(root){
             s.push(root);
             root = root->left;
@@ -1848,6 +1862,14 @@ public:
         return count;
     }
 
+//200. Number of Islands
+    //union-find
+    int Find(int p, vector<int> id) {
+
+    }
+    int numIslands(vector<vector<char>>& grid) {
+
+    }
 
 //217. Contains Duplicate
     bool containsDuplicate(vector<int>& nums) {
@@ -1905,6 +1927,28 @@ public:
             base *= 10;
         }
         return count;
+    }
+
+//263. Ugly Number
+    bool isUgly(int num) {
+        if(num == 0) return false;
+        while(num % 2 == 0) num /= 2;
+        while(num % 3 == 0) num /= 3;
+        while(num % 5 == 0) num /= 5;
+        return num == 1 ? true : false;
+    }
+
+//264. Ugly Number II
+    int nthUglyNumber(int n) {
+        vector<int> uglyVec(n, 1);
+        int i = 0, j = 0, k = 0;
+        for(int index = 1; index < n; ++index) {
+            uglyVec[index] = min(uglyVec[i] * 2, min(uglyVec[j] * 3, uglyVec[k] * 5));
+            if(uglyVec[index] == uglyVec[i] * 2) ++i;
+            if(uglyVec[index] == uglyVec[j] * 3) ++j;
+            if(uglyVec[index] == uglyVec[k] * 5) ++k;
+        }
+        return uglyVec[n - 1];
     }
 
 //371. Sum of Two Integers

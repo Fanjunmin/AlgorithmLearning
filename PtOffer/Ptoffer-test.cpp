@@ -15,6 +15,11 @@ int main()
     string S = "dadasffwrgwsaavqlpos";
     cout << pt.FirstNotRepeatingChar(S);*/
 
+//和为S的连续正数序列
+    /*
+    int sum = 1000;
+    auto x = pt.FindContinuousSequence(sum);*/
+
 
     return 0;
 }

@@ -1,15 +1,48 @@
 #ifndef PTOFFER_H
 #define PTOFFER_H
 #include <bits/stdc++.h>
-#include "TreeNode.h"
-#include "ListNode.h"
 using namespace std;
+
+struct TreeNode {
+	int val;
+	struct TreeNode *left;
+	struct TreeNode *right;
+	TreeNode(int x) :
+			val(x), left(NULL), right(NULL) {
+	}
+};
+
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+
+struct TreeLinkNode {
+    int val;
+    struct TreeLinkNode *left;
+    struct TreeLinkNode *right;
+    struct TreeLinkNode *next;
+    TreeLinkNode(int x) :val(x), left(NULL), right(NULL), next(NULL) {
+
+    }
+};
+
+struct RandomListNode {
+    int label;
+    struct RandomListNode *next, *random;
+    RandomListNode(int x) :
+            label(x), next(NULL), random(NULL) {
+    }
+};
+
 class PtOffer
 {
 public:
-//**********************************************************
-//------------------------Array数组-------------------------
-//**********************************************************
+/*********************************************************/
+/*------------------------Array数组-----------------------*/
+/**********************************************************/
+
     //二维数组中的查找
     bool Find(int target, vector<vector<int> > array) {
         //从左下角开始查找，小于target上移，大于target右移
@@ -229,9 +262,8 @@ public:
     }
 
     //数组中重复的数字
-    /*
-    //利用散列表map
     bool duplicate(int numbers[], int length, int* duplication) {
+        //利用散列表map
         map<int, int> myMap;
         for(int i = 0; i < length; ++i) {
             ++myMap[numbers[i]];
@@ -241,22 +273,136 @@ public:
             }
         }
         return false;
-    }*/
-    //利用交换
-    bool duplicate(int numbers[], int length, int* duplication) {
-        int num;
-         for(int i = 0; i < length; ++i) {
-            num = numbers[i];
-            if(i != num) {
-
-            }
-         }
-        return false;
     }
 
-//************************************************************
-//----------------------------字符串--------------------------
-//************************************************************
+    //顺时针打印矩阵
+    vector<int> printMatrix(vector<vector<int> > matrix) {
+        if(matrix.empty()) return {};
+        int m = matrix.size(), n = matrix[0].size();
+        vector<int> spiral(m * n);
+        int  i = 0, j = 0, k = 0, index = 0;
+        while(true) {
+            for(int k = j; k < n; ++k) spiral[index++] = matrix[i][k];
+            if(++i >= m) break;
+            for(int k = i; k < m; ++k) spiral[index++] = matrix[k][n - 1];
+            if(j >= --n) break;
+            for(int k = n - 1; k >= j; --k) spiral[index++] = matrix[m - 1][k];
+            if(i >= --m) break;
+            for(int k = m - 1; k >= i; --k) spiral[index++] = matrix[k][j];
+            if(++j >= n) break;
+        }
+        return spiral;
+    }
+
+    //和为S的连续正数序列
+    vector<vector<int> > FindContinuousSequence(int sum) {
+        if(sum < 2) return {};
+        vector<vector<int> > result;
+        int lo = 1, hi = 2, mid = (sum + 1) >> 1, S = lo + hi;
+        while(lo < mid && hi < sum) {
+            while(sum < S) {
+                S -= lo;
+                ++lo;
+            }
+            if(sum == S) {
+                vector<int> vec(hi - lo + 1);
+                iota(vec.begin(), vec.end(), lo);
+                result.push_back(vec);
+            }
+            ++hi;
+            S += hi;
+        }
+        return result;
+    }
+
+    //丑数
+    int GetUglyNumber_Solution(int index) {
+        if(index < 1) return 0;
+        vector<int> vec(index, 1);
+        int i = 0, j = 0, k = 0;
+        for(int pos = 1; pos < index; ++pos) {
+            vec[pos] = std::min(vec[i] * 2, std::min(vec[j] * 3, vec[k] * 5));
+            if(vec[pos] == vec[i] * 2) ++i;
+            if(vec[pos] == vec[j] * 3) ++j;
+            if(vec[pos] == vec[k] * 5) ++k;
+        }
+        return vec[index - 1];
+    }
+
+    //和为S的两个数字
+    vector<int> FindNumbersWithSum(vector<int> array,int sum) {
+        vector<int> result;
+        if(array.size() < 2) return result;
+        map<int, int> myMap;
+        int multi = INT_MAX;
+        for(int i = 0; i < array.size(); ++i) {
+            if(myMap[sum - array[i]] >= 1 && array[i] * (sum - array[i]) <= multi) {
+                result.resize(2);
+                result[1] = array[i];
+                result[0] = sum - array[i];
+            }
+            myMap[array[i]] = 1;
+        }
+        return result;
+    }
+
+    //扑克牌顺子
+    bool IsContinuous( vector<int> numbers ) {
+        //O(nlog n)排序
+        if(numbers.empty()) return false;
+        if(numbers.size() == 1) return true;
+        sort(numbers.begin(), numbers.end());
+        int zeroCount = 0, distanceCount = 0;
+        for(int i = 0; i < numbers.size(); ++i) {
+            if(numbers[i] == 0) ++zeroCount;
+            else {
+                if(i + 1 < numbers.size()) {
+                    if(numbers[i + 1] == numbers[i]) return false;
+                    else distanceCount += (numbers[i + 1] - numbers[i] - 1);
+                }
+            }
+        }
+        return distanceCount <= zeroCount;
+    }
+
+
+    //数据流中的中位数
+    priority_queue<int> priQue1;    //最小优先队列
+    priority_queue<int, vector<int>, greater<int>> priQue2;  //最大优先队列
+    int insertCount = 0;
+    //必须满足：最大优先队列的top元素小于等于最小优先队列top元素
+    void Insert(int num) {
+        ++insertCount;
+        if(insertCount % 2 == 0) {
+            priQue1.push(num);
+            priQue2.push(priQue1.top());
+            priQue1.pop();
+        }
+        else {
+            priQue2.push(num);
+            priQue1.push(priQue2.top());
+            priQue2.pop();
+        }
+    }
+    double GetMedian() {
+        if(priQue1.size() == priQue2.size()) return (priQue1.top() + priQue2.top()) / 2.0;
+        else return priQue1.size() > priQue2.size() ? priQue1.top() : priQue2.top();
+    }
+
+    //最小的k个数
+    vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+        int len = input.size();
+        if(k > len) return {};
+        for(int i = 0; i < k; ++i) {
+            make_heap(input.begin(), input.end() - i, greater<int>());  //最小堆
+            std::swap(input[0], input[len - i - 1]);
+        }
+        return vector<int>(input.end() - k, input.end());
+    }
+
+/************************************************************/
+/*----------------------------字符串-------------------------*/
+/************************************************************/
 
     //左旋转字符串
     /*
@@ -427,10 +573,51 @@ public:
         return -1;
     }
 
+    //正则表达式匹配
+    bool match(char* str, char* pattern) {
+        //直接使用cpp11的正则表达式
+        //动态规划或者递归脑子有点晕
+        if(!str && !pattern) return false;
+        regex re(pattern);
+        return regex_match(str, re);
+    }
 
-//*********************************************************
-//----------------------Tree树-----------------------------
-//*********************************************************
+    //翻转单词顺序列
+    string ReverseSentence(string str) {
+        reverse(str.begin(), str.end());
+        string::iterator firstIter = str.begin(), secondIter = str.begin();
+        while(secondIter < str.end()){
+            if(*secondIter == ' '){
+                reverse(firstIter, secondIter);
+                firstIter = secondIter + 1;
+            }
+            ++secondIter;
+        }
+        reverse(firstIter, str.end());
+        return str;
+    }
+
+
+    //字符流中第一个不重复的字符
+    list<char> dataList;
+    map<char, int> countMap;
+    void Insert(char ch) {
+        //Insert one char from stringstream
+        if(dataList.empty() || countMap[ch] == 0) {
+            dataList.insert(dataList.end(), ch);
+            countMap[ch] = 1;
+        }
+        else if(countMap[ch] == 1)
+            dataList.remove(ch);
+    }
+    char FirstAppearingOnce() {
+        //return the first appearence once char in current stringstream
+        return dataList.empty() ? '#' : dataList.front();
+    }
+
+/**********************************************************/
+/*----------------------Tree----------------------------*/
+/**********************************************************/
 
     //重建二叉树
     TreeNode* reConstructBinaryTree(vector<int> pre,vector<int> vin) {
@@ -524,8 +711,72 @@ public:
     }
 
     //二叉树中和为某一值的路径
-    vector<vector<int> > FindPath(TreeNode* root,int expectNumber) {
+    void FindPath(vector<vector<int> >&vvec, TreeNode* root, int expNum, vector<int> temp) {
+        temp.push_back(root->val);
+        if(!root->left && !root->right) {
+            if(root->val == expNum) {
+                vvec.push_back(temp);
+                return;
+            }
+            return;
+        }
+        if(root->left) {
+            FindPath(vvec, root->left, expNum - root->val, temp);
+        }
+        if(root->right) {
+            FindPath(vvec, root->right, expNum - root->val, temp);
+        }
+        temp.pop_back();
+    }
 
+    vector<vector<int> > FindPath(TreeNode* root,int expectNumber) {
+        vector<vector<int> > vvec;
+        vector<int> vec;
+        if(root) FindPath(vvec, root, expectNumber, vec);
+        return vvec;
+    }
+
+    //二叉搜索树与双向链表
+    /*
+    //迭代版 不知道哪里出错
+    void goLeft(TreeNode* root, stack<TreeNode*>& sta) {
+        while(root) {
+            sta.push(root);
+            root = root->left;
+        }
+    }
+    TreeNode* Convert(TreeNode* pRootOfTree) {
+        if(!pRootOfTree) return pRootOfTree;
+        stack<TreeNode*> sta;
+        TreeNode* root = new TreeNode(-1), *temp = root; //哨兵节点,->right指向最左侧链最深节点
+        while(true) {
+            goLeft(pRootOfTree, sta);
+            if(sta.empty()) break;
+            TreeNode* nextRoot = sta.top();
+            sta.pop();
+            root->right = nextRoot;
+            nextRoot->left = root;
+            pRootOfTree = pRootOfTree->right;
+            root = nextRoot;
+        }
+        return temp->right;
+    }*/
+    //递归版
+    void recurConvert(TreeNode* root, TreeNode*& pre) {
+        if(!root) return;
+        recurConvert(root->left, pre);
+        root->left = pre;
+        if(pre) pre->right = root;
+        pre = root;
+        recurConvert(root->right, pre);
+    }
+    TreeNode* Convert(TreeNode* pRootOfTree) {
+        if(!pRootOfTree) return pRootOfTree;
+        TreeNode* pre = 0;
+        recurConvert(pRootOfTree, pre);
+        TreeNode* res = pRootOfTree;
+        while(res ->left) res = res ->left;
+        return res;
     }
 
     //二叉树深度
@@ -533,14 +784,13 @@ public:
         return pRoot == NULL ? 0 : 1 + max(TreeDepth(pRoot->left), TreeDepth(pRoot->right));
     }
 
-
     //平衡二叉树
     bool IsBalanced(TreeNode* pRoot, int& pDepth){
         if(pRoot == NULL){
             pDepth = 0;
             return true;
         }
-        int left, right;
+        int left, right;    //记录左右子树的高度
         if(IsBalanced(pRoot->left, left) && IsBalanced(pRoot->right, right)) {
             int diff = left - right;
             if(-1 <= diff && diff <= 1) {
@@ -556,6 +806,36 @@ public:
 		return IsBalanced(pRoot, pDepth);
     }
 
+    //二叉树的下一个结点
+    TreeLinkNode* GetNext(TreeLinkNode* pNode) {
+        if(!pNode) return pNode;
+        if(pNode->right) {
+            //节点有右孩子，右孩子的最左节点即为下一个节点
+            pNode = pNode->right;
+            while(pNode->left) {
+                pNode = pNode->left;
+            }
+            return pNode;
+        }
+        else {
+            //没有右孩子
+            TreeLinkNode* parent = pNode->next;
+            if(parent) {
+                //该节点是父节点的左孩子，父节点即为下一个节点
+                if(parent->left == pNode) {
+                    return parent;
+                }
+                //该节点是父节点的右孩子，沿父节点链上升
+                else {
+                    while(parent->next && parent == parent->next->right)
+                        parent = parent->next;
+                    return parent->next;
+                }
+            }
+            else return NULL;
+        }
+    }
+
     //对称的二叉树
     bool isSymmetrical(TreeNode* lChild, TreeNode* rChild){
         if (lChild == NULL && rChild == NULL) return true;
@@ -567,7 +847,6 @@ public:
         }
         else return false;
     }
-
     bool isSymmetrical(TreeNode* pRoot){
         if(pRoot == NULL) return true;
         return isSymmetrical(pRoot->left, pRoot->right);
@@ -580,9 +859,7 @@ public:
         recursion(pRoot->left, vec, index + 1);
         recursion(pRoot->right, vec, index + 1);
     }
-
-    vector<vector<int> > Print(TreeNode* pRoot) {
-
+    vector<vector<int> > Print2(TreeNode* pRoot) {
         int h = TreeDepth(pRoot);
         if(pRoot == NULL) return {};
         vector<int> v{};
@@ -592,48 +869,414 @@ public:
         return vec;
     }
 
-
-
-    //翻转单词顺序列
-    string ReverseSentence(string str) {
-        reverse(str.begin(), str.end());
-        string::iterator firstIter = str.begin(), secondIter = str.begin();
-        while(secondIter < str.end()){
-            if(*secondIter == ' '){
-                reverse(firstIter, secondIter);
-                firstIter = secondIter + 1;
+    //按之字形顺序打印二叉树
+    vector<vector<int> > Print(TreeNode* pRoot) {
+        vector<vector<int> > vvec = {};
+        if(!pRoot) return vvec;
+        stack<TreeNode*> oddSta;//设置两个栈存放不同层的树节点
+        stack<TreeNode*> evenSta;
+        oddSta.push(pRoot);
+        while(!oddSta.empty() || !evenSta.empty()) {
+            vector<int> vec = {};
+            if(oddSta.empty()) {
+                //栈1空，栈2的元素出栈并放入vec,右左孩子依次入栈1
+                while(!evenSta.empty()) {
+                    TreeNode* node = evenSta.top();
+                    evenSta.pop();
+                    vec.push_back(node->val);
+                    if(node->right) oddSta.push(node->right);
+                    if(node->left) oddSta.push(node->left);
+                }
             }
-            ++secondIter;
+            else {
+                //栈2空，栈2的元素出栈并放入vec，左右孩子依次入栈2
+                while(!oddSta.empty()) {
+                    TreeNode* node = oddSta.top();
+                    oddSta.pop();
+                    vec.push_back(node->val);
+                    if(node->left) evenSta.push(node->left);
+                    if(node->right) evenSta.push(node->right);
+                }
+            }
+            vvec.push_back(vec);
         }
-        reverse(firstIter, str.end());
-        return str;
+        return vvec;
     }
 
-    //数值的整数次方
-        //递归版本
-        double Power(double base, int exponent) {
-            if(exponent == 0)
-                return 1;
-            else if(exponent < 0)
-                return Power(1 / base, -exponent);
-            else{
-                double temp = Power(base, exponent/2) * Power(base, exponent/2);
-                return temp * temp * (exponent % 2 ? base : 1);
+    //二叉搜索树的第k个结点
+    void KthNode(TreeNode* pRoot, vector<TreeNode*>& TN) {
+        if(!pRoot) return;
+        else {
+            KthNode(pRoot->left, TN);
+            TN.push_back(pRoot);
+            KthNode(pRoot->right, TN);
+        }
+    }
+    TreeNode* KthNode(TreeNode* pRoot, int k) {
+        //中序遍历即有序
+        vector<TreeNode*> TN;
+        KthNode(pRoot, TN);
+        return (TN.size() < k || k <= 0) ? NULL : TN[k - 1];
+    }
+
+    //序列化二叉树
+        //采用先序遍历，用vector存储
+    void Serialize(vector<int>& sto, TreeNode *root) {
+        if(!root) sto.push_back(0xffff);
+        else {
+            sto.push_back(root->val);
+            Serialize(sto, root->left);
+            Serialize(sto, root->right);
+        }
+    }
+    char* Serialize(TreeNode *root) {
+        vector<int> sto;
+        Serialize(sto, root);
+        int* res = new int[sto.size()];
+        for(int i = 0; i < sto.size(); ++i) res[i] = sto[i];
+        return (char*)res;
+    }
+    TreeNode* Deserialize(int*& str) {
+        if(*str == 0xffff) {
+            ++str;
+            return NULL;
+        }
+        TreeNode *res = new TreeNode(*str);
+        ++str;
+        res->left = Deserialize(str);
+        res->right = Deserialize(str);
+        return res;
+    }
+    TreeNode* Deserialize(char *str) {
+        int *p = (int *)str;
+        return Deserialize(p);
+    }
+
+/****************************************************************/
+/*---------------------------回溯-------------------------------*/
+/****************************************************************/
+
+    //矩阵中的路径
+    bool hasPath(char* matrix, int rows, int cols, char* str) {
+        if(!str || rows <=0 || cols <= 0) return false;
+        bool* flag = new bool[rows * cols];
+        memset(flag, 0, rows * cols);
+        for(int i = 0; i < rows; ++i) {
+            for(int j = 0; j < cols; ++j) {
+                if(hasPath(matrix, rows, cols, str, flag, i, j, 0)) return true;
             }
         }
-        //位运算版本
-        double Power2(double base, int exponent) {
-            if(exponent < 0)
-                return Power(1 / base, -exponent);
-            double re = 1;
-            while(exponent){
-                if(exponent & 1)
-                    re *= base;
-                base *= base;
-                exponent >>= 1;
-            }
-            return re;
+        delete [] flag;
+        return false;
+    }
+
+    bool hasPath(char* matrix, int rows, int cols, char* str, bool* flag, int x, int y, int index) {
+        int m_index = x * cols + y;
+        if(x < 0 || x >= rows || y < 0 || y >= cols || flag[m_index] || matrix[m_index] != str[index])
+            //位置越界或者该位置已经访问或者字符不匹配
+            return false;
+        if(str[index + 1] == '\0') return true; //字符串到末尾
+        flag[m_index] = true;
+        if(hasPath(matrix, rows, cols, str, flag, x - 1, y, index + 1) ||
+           hasPath(matrix, rows, cols, str, flag, x, y - 1, index + 1) ||
+           hasPath(matrix, rows, cols, str, flag, x + 1, y, index + 1) ||
+           hasPath(matrix, rows, cols, str, flag, x, y + 1, index + 1)) return true;
+        flag[m_index] = false;
+        return false;
+    }
+
+    //机器人的运动范围
+    bool compVal(int x, int y, int threshold) {
+        int result = 0;
+        while(x) {
+            result += x % 10;
+            x /= 10;
         }
+        while(y) {
+            result += y % 10;
+            y /= 10;
+        }
+        return result <= threshold;
+    }
+
+    int findById(vector<int> id, int p) {
+        if(p == -1) return -1;
+        else if(p == id[p]) return p;
+        else return findById(id, id[p]);
+    }
+
+    void unionById(vector<int>& id, int p, int q) {
+        int i = findById(id, p), j = findById(id, q);
+        if(i == j) return;
+        i <= j ? id[q] = i : id[p] = j;
+    }
+
+    int movingCount(int threshold, int rows, int cols) {
+        vector<int> id(rows * cols);    //id为二维数组按行拉直
+        int count = 0;
+        for(int i = 0; i < rows; ++i) {
+            for(int j = 0; j < cols; ++j) {
+                //将不满足坐标和的id值设为-1，否则设为其下标
+                id[i * cols + j] = (compVal(i, j, threshold) ? i * cols + j : -1);
+            }
+        }
+        for(int i = 0; i < rows; ++i) {
+            for(int j = 0; j < cols; ++j) {
+                //union操作
+                if(i + 1 < rows && compVal(i, j, threshold) && compVal(i + 1, j, threshold))
+                    unionById(id, i * cols + j, (i + 1) * cols + j);
+                if(j + 1 < cols && compVal(i, j, threshold) && compVal(i, j + 1, threshold))
+                    unionById(id, i * cols + j, i * cols + j + 1);
+            }
+        }
+        for(int i = 0; i < rows * cols; ++i) {
+            //id为0的坐标即满足条件，能够机器人到达
+            if(findById(id, i) == 0)
+                ++count;
+        }
+        return count;
+    }
+
+
+/***************************************************************/
+/*----------------------------栈和队列--------------------------*/
+/****************************************************************/
+
+    //滑动窗口的最大值
+    vector<int> maxInWindows(const vector<int>& num, unsigned int size) {
+        //使用队列
+        if(num.empty() || num.size() < size || !size)
+            //处理特殊情况：数组为空或者窗口长度大于数组长度或者窗口长度为空
+            return {};
+        deque<int> deq;
+        vector<int> re;
+        for(int i = 0; i < num.size(); ++i) {
+            while(!deq.empty() && num[deq.back()] <= num[i]) deq.pop_back();
+            while(!deq.empty() && i - deq.front() + 1 > size) deq.pop_front();
+            deq.push_back(i);
+            if(i + 1 >= size) re.push_back(num[deq.front()]);
+        }
+        return re;
+    }
+
+    //包含min函数的栈
+    stack<int> dataStack, minStack;
+    void push(int value) {
+        dataStack.push(value);
+        if(minStack.empty() || minStack.top() >= value) {
+            minStack.push(value);
+        }
+    }
+    void pop() {
+        if(dataStack.top() == minStack.top()) {
+            minStack.pop();
+        }
+        dataStack.pop();
+    }
+    int top() {
+        return dataStack.top();
+    }
+    int min() {
+        return minStack.top();
+    }
+
+    //栈的压入、弹出序列
+    bool IsPopOrder(vector<int> pushV,vector<int> popV) {
+        if(pushV.empty() || pushV.size() != popV.size()) return false;
+        stack<int> sta;
+        for(int i = 0, j = 0; i < pushV.size(); ++i) {
+            sta.push(pushV[i]);
+            while(j < popV.size() && sta.top() == popV[j]) {
+                sta.pop();
+                ++j;
+            }
+        }
+        return sta.empty();
+    }
+
+/*****************************************************************/
+/*-----------------------------链表-------------------------------*/
+/******************************************************************/
+
+    //从尾到头打印链表
+    /*递归版本
+    void print(ListNode* head, vector<int> &vec){
+        if(head == NULL)
+            return;
+        print(head->next, vec);
+        vec.push_back(head->val);
+	}
+    vector<int> printListFromTailToHead(ListNode* head) {
+        vector<int> vec;
+        print(head, vec);
+        return vec;
+    }*/
+    vector<int> printListFromTailToHead(ListNode* head) {
+        //非递归版本
+        vector<int> vec;
+        stack<int> sta;
+        ListNode* temp = head;
+        while(temp != NULL) {
+            sta.push(temp->val);
+            temp = temp->next;
+        }
+        while(!sta.empty()) {
+            vec.push_back(sta.top());
+            sta.pop();
+        }
+        return vec;
+    }
+
+    //链表中倒数第k个结点
+    ListNode* FindKthToTail(ListNode* pListHead, unsigned int k) {
+        //一个链表队{first, last}的距离为k,当last到达末位时，first即为倒数第k个结点
+        ListNode* first = pListHead, *last = pListHead;
+        while(k) {
+            if(!last) break;
+            last = last->next;
+            --k;
+        }
+        if(k != 0) return NULL; //链表长度小于k
+        while(last) {
+            last = last->next;
+            first = first->next;
+        }
+        return first;
+    }
+
+    //反转链表
+    ListNode* ReverseList(ListNode* pHead) {
+        //递归版；
+        if(pHead == NULL || pHead->next == NULL)
+            return pHead;
+        ListNode *pReverseNode = ReverseList(pHead->next);
+        //反转链表过程
+        pHead->next->next = pHead;
+        pHead->next = NULL;
+        return pReverseNode;
+    }
+    /*
+    ListNode* ReverseList(ListNode* pHead) {
+        //非递归版
+        if(pHead == NULL || pHead->next == NULL)
+            return pHead;
+        ListNode* pNode=pHead;//当前指针
+        ListNode* pReverseHead=NULL;//新链表的头指针
+        ListNode* pPrev=NULL;//当前指针的前一个结点
+
+        while(pNode != NULL){//当前结点不为空时才执行
+            ListNode* pNext=pNode->next;//链断开之前一定要保存断开位置后边的结点
+            if(pNext==NULL)//当pNext为空时，说明当前结点为尾节点
+                pReverseHead=pNode;
+            pNode->next=pPrev;//指针反转
+            pPrev=pNode;
+            pNode=pNext;
+        }
+        return pReverseHead;
+    }*/
+
+    //合并两个排序的链表
+    ListNode* Merge(ListNode* pHead1, ListNode* pHead2) {
+        ListNode* result = new ListNode(0); //设定一个头节点,该节点之后开始合并
+        ListNode* temp = result;    //只需返回temp节点的next
+        while(pHead1 && pHead2) {
+            if(pHead1->val <= pHead2->val) {
+                result->next = pHead1;
+                pHead1 = pHead1->next;
+            }
+            else {
+                result->next = pHead2;
+                pHead2 = pHead2->next;
+            }
+            result = result->next;
+        }
+        result->next = (pHead1 ? pHead1 : pHead2);
+        return temp->next;
+    }
+
+    //复杂链表的复制
+    RandomListNode* Clone(RandomListNode* pHead) {
+        if(!pHead) return pHead;
+        RandomListNode *cloneNode = pHead;
+        //复制每个节点连接在其后面
+        while(cloneNode) {
+            RandomListNode* Node = new RandomListNode(cloneNode->label);
+            //这个步骤就是将Node插入到cloneNode和cloneNode->next之间
+            Node->next = cloneNode->next;
+            cloneNode->next = Node;
+            cloneNode = Node->next;
+        }
+        cloneNode = pHead;
+        while(cloneNode) {
+            //对指向random进行复制
+            if(cloneNode->random)
+                cloneNode->next->random = cloneNode->random->next;
+            cloneNode = cloneNode->next->next;
+        }
+        //再进行拆分
+        cloneNode = pHead->next;
+        while(pHead->next) {
+            RandomListNode* temp = pHead->next;
+            pHead->next = temp->next;
+            //temp->next = pHead->next->next;
+            //pHead = pHead->next;
+            pHead = temp;
+        }
+        return cloneNode;
+    }
+
+    //两个链表的第一个公共结点
+    ListNode* FindFirstCommonNode( ListNode* pHead1, ListNode* pHead2) {
+        ListNode *p1 = pHead1, *p2 = pHead2;
+        while(p1 != p2) {
+            //实际最多跑两趟，长度相同时第一趟就可以直接得到公共点
+            //长度不同时，第二趟由于由于互换节点，长度差没有了
+            p1 = p1 ? p1->next : pHead2;
+            p2 = p2 ? p2->next : pHead1;
+        }
+        return p1;
+    }
+
+    //链表中环的入口结点
+    ListNode* EntryNodeOfLoop(ListNode* pHead) {
+        //使用双指针p1,p2; p1每次前进1个单位,p2每次前进2个单位
+        //有环必然相遇，相遇之后将p2置为原点,再同时按步长1前进，再次相遇必然是环的入口
+        ListNode* p1 = pHead, *p2 = pHead;
+        while(p1 && p2) {
+            p1 = p1->next;
+            if(p2->next) p2 = p2->next->next;
+            else return nullptr;
+            if(p1 == p2) break;
+        }
+        if(!p1 || !p2) return nullptr;
+        p2 = pHead;
+        while(p1 != p2) {
+            p1 = p1->next;
+            p2 = p2->next;
+        }
+        return p1;
+    }
+
+    //删除链表中重复的结点
+    ListNode* deleteDuplication(ListNode* pHead) {
+        if(!pHead || !pHead->next) return pHead;
+        ListNode* current;
+        if(pHead->next->val == pHead->val) {
+            current = pHead->next->next;
+            while(current && current->val == pHead->val)
+                current = current->next;
+            return deleteDuplication(current);
+        }
+        else {
+            current = pHead->next;
+            pHead->next = deleteDuplication(current);
+            return pHead;
+        }
+    }
+
+/******************************************************/
+/*--------------------math数学-------------------------*/
+/******************************************************/
 
     //斐波那契数列
     int Fibonacci(int n) {
@@ -646,78 +1289,38 @@ public:
         return last;
     }
 
-	//从尾到头打印链表
-	void print(ListNode* head, vector<int> &vec){
-        if(head == NULL)
-            return;
-        print(head->next, vec);
-        vec.push_back(head->val);
-	}
-    vector<int> printListFromTailToHead(ListNode* head) {
-        vector<int> vec;
-        print(head, vec);
-        return vec;
-    }
-
-    //反转链表
-    ListNode* ReverseList(ListNode* pHead) {
-        //递归版；
-        if(pHead == NULL || pHead->next == NULL)
-            return pHead;
-        ListNode *pReverseNode = ReverseList(pHead->next);
-        pHead->next->next = pHead;
-        pHead->next = NULL;
-        return pReverseNode;
-    }
-    ListNode* ReverseList2(ListNode* pHead) {
-        //非递归版
-        if(pHead == NULL || pHead->next == NULL)
-            return pHead;
-        ListNode* pNode=pHead;//当前指针
-        ListNode* pReverseHead=NULL;//新链表的头指针
-        ListNode* pPrev=NULL;//当前指针的前一个结点
-
-        while(pNode!=NULL){//当前结点不为空时才执行
-            ListNode* pNext=pNode->next;//链断开之前一定要保存断开位置后边的结点
-            if(pNext==NULL)//当pNext为空时，说明当前结点为尾节点
-                pReverseHead=pNode;
-            pNode->next=pPrev;//指针反转
-            pPrev=pNode;
-            pNode=pNext;
+    //数值的整数次方
+    /*递归版本
+    double Power(double base, int exponent) {
+        if(exponent == 0) return 1;
+        else if(exponent < 0)return Power(1 / base, -exponent);
+        else {
+            double temp = Power(base, exponent/2) * Power(base, exponent/2);
+            return temp * temp * (exponent % 2 ? base : 1);
         }
-        return pReverseHead;
-    }
-
-    //最小的k个数
-    void heapify(vector<int> A, int i, int n) {
-        int leftChild = 2 * i + 1;
-        int rightChild = 2 * i + 2;
-        int max = i;
-        if(leftChild < n && A[leftChild] < A[max])
-            max = leftChild;
-        if(rightChild < n && A[rightChild] < A[max])
-            max = rightChild;
-        if(max != i) {
-            swap(A[i], A[max]);
-            heapify(A, max, n);
+    }*/
+    //位运算版本
+    double Power(double base, int exponent) {
+        if(exponent < 0) return Power(1 / base, -exponent);
+        double re = 1;
+        while(exponent){
+            if(exponent & 1) re *= base;
+            base *= base;
+            exponent >>= 1;
         }
-    }
-
-    int buildHeap(vector<int> A) {
-        int len = A.size();
-        for(int i = len / 2 - 1; i >= 0; --i) {
-            heapify(A, i, len);
-        }
-        return len;
-    }
-    vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
-        int len = buildHeap(input);
-        while(k--) {
-            swap(input[0], input[--len]);
-            heapify(input, 0, len);
-        }
-        vector<int> re(input.rbegin(), input.rbegin()+k);
         return re;
+    }
+
+    //孩子们的游戏(圆圈中最后剩下的数)
+    int LastRemaining_Solution(int n, int m) {
+        //约瑟夫环问题 f(n, m)
+        //递推关系为：f(1, m) = 0, f(n, m) = (f(n - 1, m) + m) % n;
+        if(n < 1 || m < 1) return -1;
+        int last = 0;
+        for(int i = 2; i < n; ++i) {
+            last = (last + m) % i;
+        }
+        return last;
     }
 
 };
