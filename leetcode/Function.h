@@ -238,9 +238,8 @@ public:
 //11. Container With Most Water
     int maxArea(vector<int>& height) {
         auto volume = [height](int i, int j)->int{return min(height[i], height[j]) * (j - i);}; //体积函数
-        int leftIndex = 0, rightIndex = height.size();
+        int leftIndex = 0, rightIndex = height.size()-1;
         int v = volume(0, height.size()-1); //初始体积
-        //cout << v << endl;
         while(rightIndex > leftIndex){
             height[leftIndex] > height[rightIndex] ? --rightIndex : ++leftIndex; //从两段向中间移动
             v = max(v, volume(leftIndex, rightIndex)); //更新体积
@@ -1813,6 +1812,17 @@ public:
 
     }
 
+//122. Best Time to Buy and Sell Stock II
+    int maxProfit2(vector<int> &prices) {
+        if(prices.size() < 2) return 0;
+        int profit = 0;
+        for(int i = 1; i < prices.size(); ++i) {
+            if(prices[i] > prices[i - 1])
+                profit += prices[i] - prices[i - 1];
+        }
+        return profit;
+    }
+
 //136. Single Number
     //with map
     /*
@@ -1839,6 +1849,7 @@ public:
         }
         return a;
     }
+
 //151. Reverse Words in a String
     void reverseWords2(string &s) {
         std::reverse(s.begin(), s.end());
@@ -1852,6 +1863,17 @@ public:
         std::reverse(s.begin() + beg, s.end());
     }
 
+//179. Largest Number
+    string largestNumber(vector<int>& nums) {
+        string re = "";
+        auto f = [](int i, int j){ return true; };
+        sort(nums.begin(), nums.end(), f);
+        if(nums[0] == 0) return "0";
+        for(auto num : nums) {
+            re += std::to_string(num);
+        }
+        return re;
+    }
 //191. Number of 1 Bits
     int hammingWeight(uint32_t n) {
         int count = 0;

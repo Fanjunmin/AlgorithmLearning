@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="10" failures="2" disabled="0" errors="0" timestamp="2018-08-02T16:05:18" time="0.02" name="AllTests">
+  <testsuite name="SortTest" tests="10" failures="2" disabled="0" errors="0" time="0.016">
+    <testcase name="BubbleSortTest1" status="run" time="0.001" classname="SortTest" />
+    <testcase name="BubbleSortTest2" status="run" time="0" classname="SortTest" />
+    <testcase name="BubbleSortTest3" status="run" time="0.001" classname="SortTest" />
+    <testcase name="BubbleSortTest4" status="run" time="0.001" classname="SortTest" />
+    <testcase name="SelectionSortTest1" status="run" time="0" classname="SortTest" />
+    <testcase name="SelectionSortTest2" status="run" time="0" classname="SortTest" />
+    <testcase name="InsertionSortTest1" status="run" time="0.001" classname="SortTest">
+      <failure message="d:\workspace\mygitfile\algorithm\sortalgorithm\sort\sort\mysorttest.cpp:53&#x0A;Value of: g_vec == g_right&#x0A;  Actual: false&#x0A;Expected: true" type=""><![CDATA[d:\workspace\mygitfile\algorithm\sortalgorithm\sort\sort\mysorttest.cpp:53
+Value of: g_vec == g_right
+  Actual: false
+Expected: true]]></failure>
+    </testcase>
+    <testcase name="InsertionSortTest2" status="run" time="0.001" classname="SortTest">
+      <failure message="d:\workspace\mygitfile\algorithm\sortalgorithm\sort\sort\mysorttest.cpp:57&#x0A;Value of: g_vec == g_right&#x0A;  Actual: false&#x0A;Expected: true" type=""><![CDATA[d:\workspace\mygitfile\algorithm\sortalgorithm\sort\sort\mysorttest.cpp:57
+Value of: g_vec == g_right
+  Actual: false
+Expected: true]]></failure>
+    </testcase>
+    <testcase name="CountSortTest" status="run" time="0" classname="SortTest" />
+    <testcase name="RadixSortTest" status="run" time="0" classname="SortTest" />
+  </testsuite>
+</testsuites>

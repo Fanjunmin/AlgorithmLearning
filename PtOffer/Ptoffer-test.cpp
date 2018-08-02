@@ -20,6 +20,8 @@ int main()
     int sum = 1000;
     auto x = pt.FindContinuousSequence(sum);*/
 
-
+    //cout << __cplusplus;
+    int x = 0xff;
+    cout << (x << 33);
     return 0;
 }

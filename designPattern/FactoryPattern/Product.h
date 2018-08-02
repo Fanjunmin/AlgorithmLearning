@@ -1,25 +1,19 @@
-#ifndef PRODUCT_H_INCLUDED
-#define PRODUCT_H_INCLUDED
+//Product.h
+#ifndef _PRODUCT_H_
+#define _PRODUCT_H_
 #include <iostream>
-
-class Product
-{
+class Product {
 public:
     virtual ~Product() = 0;
 protected:
-    Product();
+    Product() {}  //ÆÁ±Î¹¹Ôìº¯Êý
 };
-Product::Product() { }
-Product::~Product() { }
-
-class ConcreteProduct : public Product
-{
+class ConcreteProduct : public Product {
 public:
-    ~ConcreteProduct();
-    ConcreteProduct();
+    virtual ~ConcreteProduct() {}
+    ConcreteProduct() {
+        std::cout << "ConcreteProduct..." << std::endl;
+    }
 };
-ConcreteProduct::~ConcreteProduct() { }
-ConcreteProduct::ConcreteProduct() {
-    std::cout << "ConcreteProduct..." << std::endl;
-}
-#endif // PRODUCT_H_INCLUDED
+Product::~Product() {}
+#endif //_PRODUCT_H_
